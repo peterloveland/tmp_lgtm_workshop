@@ -1,17 +1,35 @@
-<h2>Rectangle Creator</h2>
-<p>Count: <input id="count" value="5"></p>
-<button id="create">Create</button>
-<button id="cancel">Cancel</button>
+<!--    THIS IS THE UI OF THE FIGMA PLUGIN.
+        IT CONNECTS TO THE OPENAI API.
+        WHEN WE RECEIVE A MESSAGE FROM THE BACK-END, WE CAN USE IT TO UPDATE THE UI.
+        WE UPDATE THE FIGMA UI BY SENDING MESSAGES TO CODE.TS like: "parent.postMessage({ pluginMessage: { type: 'INSERT MESSAGE HERE AS A STRING' } }, '*')"
+-->
+
+
+<div class="ui-container">
+  <h1>AI Chatbot</h1>
+  <button id="do-some-ai">Generate a GitHub issue title</button>
+</div>
+
+<h2>Title:</h2>
+<p id="title"></p>
+<h3>Body</h3>
+<p id="body"></p>
+
 <script>
+  // Listen for messages from the back-end
+  onmessage = (event) => {
+    const { type, message } = event.data.pluginMessage
 
-document.getElementById('create').onclick = () => {
-  const textbox = document.getElementById('count');
-  const count = parseInt(textbox.value, 10);
-  parent.postMessage({ pluginMessage: { type: 'create-rectangles', count } }, '*')
-}
+    // here we listen to the message from the back-end. This is looking for a message with the type "update-ui"
+    if (type === 'update-ui') {
+      console.log('Received message from back-end:', type)
+      document.getElementById('title').innerText = message.title
+      document.getElementById('body').innerText = message.body
+    }
+  }
 
-document.getElementById('cancel').onclick = () => {
-  parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*')
-}
-
+  // this is the button that triggers a message to the back-end. All the message says is it's type, which is "generate-ai"
+  document.getElementById('do-some-ai').onclick = () => {
+    parent.postMessage({ pluginMessage: { type: 'generate-ai' } }, '*')
+  }
 </script>
