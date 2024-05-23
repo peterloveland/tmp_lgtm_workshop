@@ -4,32 +4,57 @@
         WE UPDATE THE FIGMA UI BY SENDING MESSAGES TO CODE.TS like: "parent.postMessage({ pluginMessage: { type: 'INSERT MESSAGE HERE AS A STRING' } }, '*')"
 -->
 
-
-<div class="ui-container">
-  <h1>AI Chatbot</h1>
-  <button id="do-some-ai">Generate a GitHub issue title</button>
-</div>
-
-<h2>Title:</h2>
-<p id="title"></p>
-<h3>Body</h3>
-<p id="body"></p>
-
-<script>
-  // Listen for messages from the back-end
-  onmessage = (event) => {
-    const { type, message } = event.data.pluginMessage
-
-    // here we listen to the message from the back-end. This is looking for a message with the type "update-ui"
-    if (type === 'update-ui') {
-      console.log('Received message from back-end:', type)
-      document.getElementById('title').innerText = message.title
-      document.getElementById('body').innerText = message.body
+<style>
+  .ui-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  </style>
+  
+  <div class="ui-container">
+    <textarea id="prompt-text" placeholder="Enter your prompt here"></textarea>
+    <button id="submit" type="button">Submit</button>
+    <button id="ping">Ping</button>
+  </div>
+  
+  <script>
+    // Listen for messages from the back-end
+    onmessage = (event) => {
+      const { type, message, isLoading } = event.data.pluginMessage
+      
+      // If we receive an event of type "pong", show an alert.
+      if (type === 'pong') {
+        alert("Pong")
+      }
+  
+      if (type === 'set_loading') {
+        document.getElementById('submit').innerText = isLoading ? 'Generating…' : 'Submit'
+      }
+  
+      // here we listen to the message from the back-end. This is looking for a message with the type "update-ui"
+      if (type === 'update-ui') {
+        console.log('Received message from back-end:', type)
+      }
     }
-  }
-
-  // this is the button that triggers a message to the back-end. All the message says is it's type, which is "generate-ai"
-  document.getElementById('do-some-ai').onclick = () => {
-    parent.postMessage({ pluginMessage: { type: 'generate-ai' } }, '*')
-  }
-</script>
+  
+    // Here we list for the click events on the buttons. You could do this much nicer in React.
+    document.getElementById('submit').onclick = () => {
+      const prompt = document.getElementById('prompt-text').value
+      // We need to send a message to Figma itself, we do that with parent.postMessage
+      parent.postMessage({ pluginMessage: { type: 'generate-ai', prompt } }, '*')
+    }
+  
+    document.getElementById('ping').onclick = () => {
+      parent.postMessage({ pluginMessage: { type: 'ping' } }, '*')
+    }
+  
+    // cmd+enter to submit
+    document.getElementById('prompt-text').addEventListener('keydown', function(e) {
+      if(e.keyCode == 13 && e.metaKey) {
+        document.getElementById('submit').click();
+      }
+    });
+  </script>
+  
