@@ -103,8 +103,6 @@ const DO_SOMETHING_WITH_RESPONSE = (response:[]) => {
   async function replaceMultipleNodesText(textArray: string[]) {
     const nodes = figma.currentPage.selection as TextNode[]
     //@ts-expect-error expecting
-    console.log("selection is", figma.currentPage.selection.map(node => node.characters))
-    console.log("Nodes are", nodes.map(node => node.characters))
     nodes.forEach(async (node, index) => {
       console.log("replacing", node.characters, "with", textArray[index])
       await replaceTextOfNode(node, textArray[index]);
