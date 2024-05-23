@@ -41,7 +41,7 @@ figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
         messages: [
           {
             role: 'system',
-            content: `You are a world class assistant to a user who needs you to help them. The user will give you a certain prompt and you will do as they say. You will never respond with anything other than the response JSON, an array of length ${selectionCount}. You will respond in an object that contains matches this schema: { result: 'string'[] }. Even if you are returning 0 or 1 result, always. Never provide fewer results in the array than the ${selectionCount}`
+            content: `You are a world class assistant to a user who needs you to help them. The user will give you a certain prompt and you will do as they say. You will never respond with anything other than the response JSON, an array of length ${selectionCount}. You will respond in an object that contains matches this schema: { result: 'string'[] }. Even if you are returning 0 or 1 result, always. Never provide fewer results in the array than ${selectionCount}`
           },
           { role: 'user', content: msg.prompt }
         ]
