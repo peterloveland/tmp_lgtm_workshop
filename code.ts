@@ -104,7 +104,6 @@ const DO_SOMETHING_WITH_RESPONSE = (response:[]) => {
     const nodes = figma.currentPage.selection as TextNode[]
     //@ts-expect-error expecting
     nodes.forEach(async (node, index) => {
-      console.log("replacing", node.characters, "with", textArray[index])
       await replaceTextOfNode(node, textArray[index]);
     });
   }
