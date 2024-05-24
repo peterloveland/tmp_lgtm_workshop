@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 // This file holds the main code for our plugin. This file is where we make  a call to the OpenAI API
 // and then do something with the response in the figma document.
 // We can have access to the figma document via the figma global object. (e.g. figma.currentPage.selection)
@@ -15,9 +17,9 @@ figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
       sendMessageToUI('pong');
       sendMessageToUI('set_loading', {isLoading: false});
     }, 2000);
-
+    
   }
-
+  
   if (msg.type === 'generate-ai') {
     sendMessageToUI('set_loading', {isLoading: true });
     const OPENAI_API_KEY = ''; // replace with your actual API key
@@ -41,7 +43,12 @@ figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
         messages: [
           {
             role: 'system',
-            content: `You are a world class assistant to a user who needs you to help them. The user will give you a certain prompt and you will do as they say. You will never respond with anything other than the response JSON, an array of length ${selectionCount}. You will respond in an object that contains matches this schema: { result: 'string'[] }. Even if you are returning 0 or 1 result, always. Never provide fewer results in the array than ${selectionCount}`
+            content: `
+              You are a world class assistant to a user who needs you to help them. The user will give you a certain prompt and you will do as they say.
+              You will never respond with anything other than the response JSON.
+              You will respond in an object that contains matches this schema: { result: { title: string, status: string, description: string } }
+              Status is randomly picked from either 'open', 'completed' or 'not planned'.
+            `,
           },
           { role: 'user', content: msg.prompt }
         ]
@@ -49,12 +56,12 @@ figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
     });
 
     const data = await response.json();
-    console.log("Data is", data)
     if (data.error || !data.choices.length) {
       console.error(data || 'No response from OpenAI API')
       notifyInFigma('Error: No response from OpenAI API');
     } else {
       const parsedResponse = parseOpenAIResponse(data);
+      sendMessageToUI('parsed_response', parsedResponse);
       DO_SOMETHING_WITH_RESPONSE(parsedResponse);
     }
   }
@@ -66,9 +73,15 @@ figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
 // THIS IS WHERE YOU CAN WRITE YOUR FUNCTION THAT WILL TAKE THE RESPONSE FROM OPENAI (WHICH IS AN ARRAY) AND DO SOMETHING WITH IT IN FIGMA
 // view the helper functions below to see how you can interact with the figma document
 
-const DO_SOMETHING_WITH_RESPONSE = (response:[]) => {
-  notifyInFigma(`Received ${response.length} responses from OpenAI: ${JSON.stringify(response)}`); // this is how you show a message in the UI
-  replaceMultipleNodesText(response);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const DO_SOMETHING_WITH_RESPONSE = (response: any) => {
+  notifyInFigma(`Response from OpenAI: ${JSON.stringify(response)}`); // this is how you show a message in the UI
+  const titleNode = getLayerFromSelectionWithTitle('__title');
+  const statusNode = getLayerFromSelectionWithTitle('__status');
+  const descriptionNode = getLayerFromSelectionWithTitle('__description');
+  replaceTextOfNode(titleNode as TextNode, response.title);
+  replaceTextOfNode(descriptionNode as TextNode, response.description);
+  changeVariantOfComponent(statusNode as InstanceNode, 'type', response.status) // TO DO: I THINK WE CAN ADD THIS AS AN EXTENSION SNIPPET
   return response;
 }
 
@@ -76,14 +89,14 @@ const DO_SOMETHING_WITH_RESPONSE = (response:[]) => {
 
 
 
-//   _    _          _                            __                          _     _                       
-//  | |  | |        | |                          / _|                        | |   (_)                      
-//  | |__| |   ___  | |  _ __     ___   _ __    | |_   _   _   _ __     ___  | |_   _    ___    _ __    ___ 
-//  |  __  |  / _ \ | | | '_ \   / _ \ | '__|   |  _| | | | | | '_ \   / __| | __| | |  / _ \  | '_ \  / __|
-//  | |  | | |  __/ | | | |_) | |  __/ | |      | |   | |_| | | | | | | (__  | |_  | | | (_) | | | | | \__ \
-//  |_|  |_|  \___| |_| | .__/   \___| |_|      |_|    \__,_| |_| |_|  \___|  \__| |_|  \___/  |_| |_| |___/
-//                      | |                                                                                 
-//                      |_|                                                                                 
+//   ______ _                         _          _                     
+//  |  ____(_)                       | |        | |                    
+//  | |__   _  __ _ _ __ ___   __ _  | |__   ___| |_ __   ___ _ __ ___ 
+//  |  __| | |/ _` | '_ ` _ \ / _` | | '_ \ / _ \ | '_ \ / _ \ '__/ __|
+//  | |    | | (_| | | | | | | (_| | | | | |  __/ | |_) |  __/ |  \__ \
+//  |_|    |_|\__, |_| |_| |_|\__,_| |_| |_|\___|_| .__/ \___|_|  |___/
+//             __/ |                              | |                  
+//            |___/                               |_|                                                                                                 
 
 // These are small functions we've written to help you interact with the figma document. You can use them in your code above.
 
@@ -102,14 +115,32 @@ const DO_SOMETHING_WITH_RESPONSE = (response:[]) => {
   // this is a snippet to replace the text of the selected nodes
   async function replaceMultipleNodesText(textArray: string[]) {
     const nodes = figma.currentPage.selection as TextNode[]
-    //@ts-expect-error expecting
     nodes.forEach(async (node, index) => {
       await replaceTextOfNode(node, textArray[index]);
     });
   }
 
-  // change variable of 
+  // This is a snippet to change the variant of a component.
+  // You might want to make your component in Figma from scratch, make it simple with easy naming.
+  // This snippet won't handle nested instances.
+  // propName is the name of the property you want to change, propValue is the value you want to change it to.
+  async function changeVariantOfComponent(node: InstanceNode, propName: string, propValue: string) {
+      if (node.type === 'INSTANCE') {
+        try {
+            node.setProperties({
+              [propName]: propValue
+            })
+        } catch (error) {
+          console.error(error);
+        } 
+        
+      } else {
+        notifyInFigma('Please select a component');
+      }
+  }
 
+
+  // This is a simple way to get started, change the text of a node.
   async function replaceTextOfNode(node: TextNode, newText: string) {
     await figma.loadFontAsync(node.fontName as FontName);
     node.characters = newText;
@@ -129,16 +160,24 @@ const DO_SOMETHING_WITH_RESPONSE = (response:[]) => {
 // These can mostly be ignored, they are just helper functions to make the code more readable and quick to write.
 // Feel free to use them or modify them as you see fit.
 
-const parseOpenAIResponse = (response) => {
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const parseOpenAIResponse = (response: any) => {
   const content = response.choices[0].message.content;
+
   const parsedResponse = JSON.parse(content).result;
   return parsedResponse;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const sendMessageToUI = (type:string, message: any = {}) => {
   figma.ui.postMessage({type: type, message});
 }
 
 const notifyInFigma = (message: string, timeout: number = 2000) => {
   figma.notify(message, {timeout: timeout});
+}
+
+const getLayerFromSelectionWithTitle = (title: string) => {
+  return figma.currentPage.selection.find(node => node.name === title);
 }

@@ -15,6 +15,7 @@
   
   <div class="ui-container">
     <textarea id="prompt-text" placeholder="Enter your prompt here">Generate titles for issues about react</textarea>
+    <p id="parsed">No response yet</p>
     <button id="submit" type="button">Submit</button>
     <button id="ping">Ping</button>
   </div>
@@ -32,6 +33,11 @@
       if (type === 'set_loading') {
         document.getElementById('submit').innerText = isLoading ? 'Generating…' : 'Submit'
       }
+      
+      if (type === 'parsed_response') {
+        document.getElementById('parsed').innerText = message ? JSON.stringify(message) : ''
+      }
+      
   
       // here we listen to the message from the back-end. This is looking for a message with the type "update-ui"
       if (type === 'update-ui') {
@@ -49,7 +55,7 @@
     document.getElementById('ping').onclick = () => {
       parent.postMessage({ pluginMessage: { type: 'ping' } }, '*')
     }
-  
+    
     // cmd+enter to submit
     document.getElementById('prompt-text').addEventListener('keydown', function(e) {
       if(e.keyCode == 13 && e.metaKey) {
