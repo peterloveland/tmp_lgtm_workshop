@@ -24,12 +24,6 @@ figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
     sendMessageToUI('set_loading', {isLoading: true });
     const OPENAI_API_KEY = ''; // replace with your actual API key
 
-    const selectionCount = figma.currentPage.selection.length;
-    const allAppliedFilles = getAppliedColorOfNodes();
-
-    console.log("all applied fills", allAppliedFilles)
-    console.log({selectionCount})
-
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -144,6 +138,19 @@ const DO_SOMETHING_WITH_RESPONSE = (response: any) => {
   async function replaceTextOfNode(node: TextNode, newText: string) {
     await figma.loadFontAsync(node.fontName as FontName);
     node.characters = newText;
+  }
+
+  // snippet to change the fill of a node
+  // you could ask OpenAI to give you a color and then use this function to change the fill of a node.
+  // Could be used to set Labels? Severity? Status? etc.
+  // Sample usage: changeFillOfNode(titleNode as TextNode, {r: 107, g: 185, b: 123});
+  async function changeFillOfNode(node: TextNode | FrameNode | InstanceNode, color: {r: number, g: number, b: number}) {
+    const r = color.r / 255;
+    const g = color.g / 255;
+    const b = color.b / 255;
+    if ( node.type === 'TEXT') { // to-do: add support for other node types
+      node.setRangeFills(0, node.characters.length, [{type: 'SOLID', color: {r, g, b}}]);
+    }
   }
 
 
