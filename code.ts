@@ -7,6 +7,9 @@ const OPENAI_API_KEY = ''; // replace with your actual API key
 
 figma.showUI(__html__);
 
+// resize the UI to fit the content
+figma.ui.resize(300, 500)
+
 // ****************************************************************************************************************************************
 // THIS IS WHERE WE LISTEN FOR MESSAGES FROM THE UI AND THEN DO SOMETHING WITH THEM
 figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
