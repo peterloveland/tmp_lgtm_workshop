@@ -32,7 +32,7 @@ figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
       },
       // https://platform.openai.com/docs/guides/text-generation/chat-completions-api
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-3.5-turbo-1106',
         response_format: {'type':'json_object'},
         messages: [
           {
