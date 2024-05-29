@@ -15,15 +15,14 @@ figma.ui.resize(300, 500)
 figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
   
   if (msg.type === '') { // we listen for the message type 'ping!'
-    notifyInFigma('Ping!'); // this is how you show an alert/toast inside the figma the UI
+    figma.notify('Ping!', {timeout: 2000}); // this is how you show an alert/toast inside the figma the UI
     setTimeout(() => {
-      sendMessageToUI('pong');
+      figma.ui.postMessage({type: 'pong'});
     }, 2000);
     
   }
   
   if (msg.type === 'generate-ai') {
-    sendMessageToUI('set_loading', {isLoading: true });
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -51,13 +50,12 @@ figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
     const data = await response.json();
     if (data.error || !data.choices.length) {
       console.error(data || 'No response from OpenAI API')
-      notifyInFigma('Error: No response from OpenAI API');
+			figma.notify('Error: No response from OpenAI API', {timeout: 2000});
     } else {
-      sendMessageToUI('parsed_response', data);
+			figma.ui.postMessage({type: 'parsed_response', message: data})
       DO_SOMETHING_WITH_RESPONSE(data);
     }
   }
-  sendMessageToUI('set_loading', {isLoading: false });
 }
 
 
@@ -120,7 +118,7 @@ const DO_SOMETHING_WITH_RESPONSE = (response: any) => {
         } 
         
       } else {
-        notifyInFigma('Please select a component');
+        figma.notify('Please select a component!', {timeout: 2000}); // this is how you show an alert/toast inside the figma the UI
       }
   }
 
@@ -165,15 +163,6 @@ const parseOpenAIResponse = (response: any) => {
 
   const parsedResponse = JSON.parse(content).result;
   return parsedResponse;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const sendMessageToUI = (type:string, message: any = {}) => {
-  figma.ui.postMessage({type: type, message});
-}
-
-const notifyInFigma = (message: string, timeout: number = 2000) => {
-  figma.notify(message, {timeout: timeout});
 }
 
 const getLayerFromSelectionWithTitle = (title: string) => {
