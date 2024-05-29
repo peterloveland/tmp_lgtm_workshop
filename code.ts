@@ -29,7 +29,6 @@ figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${OPENAI_API_KEY}`
       },
-      // https://platform.openai.com/docs/guides/text-generation/chat-completions-api
       body: JSON.stringify({
         model: 'gpt-4-turbo',
         response_format: {'type':'json_object'},
