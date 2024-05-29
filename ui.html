@@ -10,13 +10,18 @@
     flex-direction: column;
     gap: 8px;
   }
+
+  #parsed-response {
+    color: gray;
+    font-size: 12px;
+    border-top: 1px solid lightgray;
+    padding-top: 12px;
+  }
 </style>
 
 <div class="ui-container">
-  <textarea id="prompt-text">Generate content for a sample issue about React</textarea>
-  <button id="submit" type="button">Submit</button>
-  <p id="parsed">No response yet</p>
-  <button id="ping">Ping</button>
+  Your UI goes here!
+  <code id="parsed-response">API Response will appear here</code>
 </div>
 
 <script>
@@ -29,30 +34,14 @@
       alert("Pong")
     }
 
-    if (type === 'set_loading') {
-      document.getElementById('submit').innerText = isLoading ? 'Generating…' : 'Submit'
-    }
-
-    if (type === 'parsed_response') {
+    if (type === 'parsed-response') {
       document.getElementById('parsed').innerText = message ? JSON.stringify(message) : ''
     }
-
 
     // here we listen to the message from the back-end. This is looking for a message with the type "update-ui"
     if (type === 'update-ui') {
       console.log('Received message from back-end:', type)
     }
-  }
-
-  // Here we list for the click events on the buttons. You could do this much nicer in React.
-  document.getElementById('submit').onclick = () => {
-    const prompt = document.getElementById('prompt-text').value
-    // We need to send a message to Figma itself, we do that with parent.postMessage
-    parent.postMessage({ pluginMessage: { type: 'generate-ai', prompt } }, '*')
-  }
-
-  document.getElementById('ping').onclick = () => {
-    parent.postMessage({ pluginMessage: { type: 'ping' } }, '*')
   }
 
 </script>

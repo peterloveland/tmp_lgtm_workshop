@@ -1,4 +1,7 @@
 // const OPENAI_API_KEY = ''; // replace with your actual API key
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 // // This file holds the main code for our plugin. This file is where we make  a call to the OpenAI API
 // // and then do something with the response in the figma document.
 // // We can have access to the figma document via the figma global object. (e.g. figma.currentPage.selection)

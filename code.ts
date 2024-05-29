@@ -1,3 +1,4 @@
+const OPENAI_API_KEY = ''; // replace with your actual API key
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 // This file holds the main code for our plugin. This file is where we make  a call to the OpenAI API
@@ -10,8 +11,7 @@ figma.showUI(__html__);
 // THIS IS WHERE WE LISTEN FOR MESSAGES FROM THE UI AND THEN DO SOMETHING WITH THEM
 figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
   
-  if (msg.type === 'ping') { // we listen for the message type 'ping!'
-    // sendMessageToUI('set_loading', {isLoading: true}); // we use sendMessageToUI to send a message to the UI. We listen for these events in ui.html
+  if (msg.type === '') { // we listen for the message type 'ping!'
     notifyInFigma('Ping!'); // this is how you show an alert/toast inside the figma the UI
     setTimeout(() => {
       sendMessageToUI('pong');
@@ -21,8 +21,6 @@ figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
   
   if (msg.type === 'generate-ai') {
     sendMessageToUI('set_loading', {isLoading: true });
-    const OPENAI_API_KEY = ''; // replace with your actual API key
-
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -39,11 +37,10 @@ figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
             content: `
               You are a world class assistant to a user who needs you to help them. The user will give you a certain prompt and you will do as they say.
               You will never respond with anything other than the response JSON.
-              You will respond in an object that contains matches this schema: { result: { title: string, description: string, status: string } }
-              Status is randomy picked from either 'open', 'completed', 'not planned'. The odds of each one are 1 in 3.
+              You will respond in an object that contains matches this schema: { result: { title: string } }
             `,
           },
-          { role: 'user', content: msg.prompt }
+          { role: 'user', content: "Generate content for a design conference talk" }
         ]
       })
     });
@@ -53,9 +50,8 @@ figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
       console.error(data || 'No response from OpenAI API')
       notifyInFigma('Error: No response from OpenAI API');
     } else {
-      const parsedResponse = parseOpenAIResponse(data);
-      sendMessageToUI('parsed_response', parsedResponse);
-      DO_SOMETHING_WITH_RESPONSE(parsedResponse);
+      sendMessageToUI('parsed_response', data);
+      DO_SOMETHING_WITH_RESPONSE(data);
     }
   }
   sendMessageToUI('set_loading', {isLoading: false });
@@ -69,19 +65,6 @@ figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const DO_SOMETHING_WITH_RESPONSE = (response: any) => {
-  notifyInFigma('Response from OpenAI: ' + JSON.stringify(response))
-  const title = response.title
-  const description = response.description
-  const status = response.status
-
-  const titleNode = getLayerFromSelectionWithTitle('__title') as TextNode
-  const descriptionNode = getLayerFromSelectionWithTitle('__description') as TextNode
-  const statusNode = getLayerFromSelectionWithTitle('__status') as InstanceNode
-
-  replaceTextOfNode(titleNode, title);
-  replaceTextOfNode(descriptionNode, description);
-  changeVariantOfComponent(statusNode, 'type', status);
-
   
 }
 
@@ -176,6 +159,7 @@ const DO_SOMETHING_WITH_RESPONSE = (response: any) => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const parseOpenAIResponse = (response: any) => {
   const content = response.choices[0].message.content;
+
   const parsedResponse = JSON.parse(content).result;
   return parsedResponse;
 }
