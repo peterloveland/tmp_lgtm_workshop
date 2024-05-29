@@ -36,7 +36,7 @@
     }
 
     if (type === 'parsed-response') {
-      document.getElementById('parsed').innerText = message ? JSON.stringify(message) : ''
+      document.getElementById('parsed-response').innerText = message ? JSON.stringify(message) : ''
     }
 
     // here we listen to the message from the back-end. This is looking for a message with the type "update-ui"
