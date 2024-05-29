@@ -11,11 +11,10 @@ figma.showUI(__html__);
 figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
   
   if (msg.type === 'ping') { // we listen for the message type 'ping!'
-    sendMessageToUI('set_loading', {isLoading: true}); // we use sendMessageToUI to send a message to the UI. We listen for these events in ui.html
+    // sendMessageToUI('set_loading', {isLoading: true}); // we use sendMessageToUI to send a message to the UI. We listen for these events in ui.html
     notifyInFigma('Ping!'); // this is how you show an alert/toast inside the figma the UI
     setTimeout(() => {
       sendMessageToUI('pong');
-      sendMessageToUI('set_loading', {isLoading: false});
     }, 2000);
     
   }
@@ -40,8 +39,8 @@ figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
             content: `
               You are a world class assistant to a user who needs you to help them. The user will give you a certain prompt and you will do as they say.
               You will never respond with anything other than the response JSON.
-              You will respond in an object that contains matches this schema: { result: { title: string, status: string, description: string } }
-              Status is randomly picked from either 'open', 'completed' or 'not planned'.
+              You will respond in an object that contains matches this schema: { result: { title: string, description: string, status: string } }
+              Status is randomy picked from either 'open', 'completed', 'not planned'. The odds of each one are 1 in 3.
             `,
           },
           { role: 'user', content: msg.prompt }
@@ -63,20 +62,27 @@ figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
 }
 
 
+
 // ****************************************************************************************************************************************
 // THIS IS WHERE YOU CAN WRITE YOUR FUNCTION THAT WILL TAKE THE RESPONSE FROM OPENAI (WHICH IS AN ARRAY) AND DO SOMETHING WITH IT IN FIGMA
 // view the helper functions below to see how you can interact with the figma document
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const DO_SOMETHING_WITH_RESPONSE = (response: any) => {
-  notifyInFigma(`Response from OpenAI: ${JSON.stringify(response)}`); // this is how you show a message in the UI
-  const titleNode = getLayerFromSelectionWithTitle('__title');
-  const statusNode = getLayerFromSelectionWithTitle('__status');
-  const descriptionNode = getLayerFromSelectionWithTitle('__description');
-  replaceTextOfNode(titleNode as TextNode, response.title);
-  replaceTextOfNode(descriptionNode as TextNode, response.description);
-  changeVariantOfComponent(statusNode as InstanceNode, 'type', response.status) // TO DO: I THINK WE CAN ADD THIS AS AN EXTENSION SNIPPET
-  return response;
+  notifyInFigma('Response from OpenAI: ' + JSON.stringify(response))
+  const title = response.title
+  const description = response.description
+  const status = response.status
+
+  const titleNode = getLayerFromSelectionWithTitle('__title') as TextNode
+  const descriptionNode = getLayerFromSelectionWithTitle('__description') as TextNode
+  const statusNode = getLayerFromSelectionWithTitle('__status') as InstanceNode
+
+  replaceTextOfNode(titleNode, title);
+  replaceTextOfNode(descriptionNode, description);
+  changeVariantOfComponent(statusNode, 'type', status);
+
+  
 }
 
 
@@ -107,10 +113,9 @@ const DO_SOMETHING_WITH_RESPONSE = (response: any) => {
   }
 
   // this is a snippet to replace the text of the selected nodes
-  async function replaceMultipleNodesText(textArray: string[]) {
-    const nodes = figma.currentPage.selection as TextNode[]
-    nodes.forEach(async (node, index) => {
-      await replaceTextOfNode(node, textArray[index]);
+  async function replaceText(nodes: TextNode[], text: string) {
+    nodes.forEach(async (node) => {
+      await replaceTextOfNode(node, text);
     });
   }
 
@@ -171,7 +176,6 @@ const DO_SOMETHING_WITH_RESPONSE = (response: any) => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const parseOpenAIResponse = (response: any) => {
   const content = response.choices[0].message.content;
-
   const parsedResponse = JSON.parse(content).result;
   return parsedResponse;
 }
