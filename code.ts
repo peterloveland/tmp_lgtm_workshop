@@ -63,7 +63,7 @@ figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
 // view the helper functions below to see how you can interact with the figma document
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const DO_SOMETHING_WITH_RESPONSE = (response: any) => {
+const DO_SOMETHING_WITH_RESPONSE = (data: any) => {
   
 }
 
