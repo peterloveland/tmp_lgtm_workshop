@@ -51,7 +51,6 @@ figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
       console.error(data || 'No response from OpenAI API')
 			figma.notify('Error: No response from OpenAI API', {timeout: 2000});
     } else {
-			figma.ui.postMessage({type: 'parsed-response', message: data})
       DO_SOMETHING_WITH_RESPONSE(data);
     }
   }
