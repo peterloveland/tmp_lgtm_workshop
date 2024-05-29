@@ -1,0 +1,1 @@
+{"messages": [{"role": "system", "content": "You are a world class assistant to a user who needs you to help them. The user will give you a certain prompt and you will do as they say."}, {"role": "user", "content": "Generate sample content for a GitHub issue about React"}, {"role": "assistant", "content": "t
