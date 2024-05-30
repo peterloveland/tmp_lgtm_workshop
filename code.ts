@@ -1,3 +1,4 @@
+const OPENAI_API_KEY = ''; // replace with your actual API key
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 // This file holds the main code for our plugin. This file is where we make  a call to the OpenAI API
@@ -6,31 +7,28 @@
 
 figma.showUI(__html__);
 
+// resize the UI to fit the content
+figma.ui.resize(300, 500)
+
 // ****************************************************************************************************************************************
 // THIS IS WHERE WE LISTEN FOR MESSAGES FROM THE UI AND THEN DO SOMETHING WITH THEM
 figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
   
-  if (msg.type === 'ping') { // we listen for the message type 'ping!'
-    sendMessageToUI('set_loading', {isLoading: true}); // we use sendMessageToUI to send a message to the UI. We listen for these events in ui.html
-    notifyInFigma('Ping!'); // this is how you show an alert/toast inside the figma the UI
+  if (msg.type === '') { // we listen for the message type 'ping!'
+    figma.notify('Ping!', {timeout: 2000}); // this is how you show an alert/toast inside the figma the UI
     setTimeout(() => {
-      sendMessageToUI('pong');
-      sendMessageToUI('set_loading', {isLoading: false});
+      figma.ui.postMessage({type: 'pong'});
     }, 2000);
     
   }
   
   if (msg.type === 'generate-ai') {
-    sendMessageToUI('set_loading', {isLoading: true });
-    const OPENAI_API_KEY = ''; // replace with your actual API key
-
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${OPENAI_API_KEY}`
       },
-      // https://platform.openai.com/docs/guides/text-generation/chat-completions-api
       body: JSON.stringify({
         model: 'gpt-4-turbo',
         response_format: {'type':'json_object'},
@@ -40,11 +38,10 @@ figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
             content: `
               You are a world class assistant to a user who needs you to help them. The user will give you a certain prompt and you will do as they say.
               You will never respond with anything other than the response JSON.
-              You will respond in an object that contains matches this schema: { result: { title: string, status: string, description: string } }
-              Status is randomly picked from either 'open', 'completed' or 'not planned'.
+              You will respond with an object that matches this schema: { result: { title: string } }
             `,
           },
-          { role: 'user', content: msg.prompt }
+          { role: 'user', content: "Generate content for a design conference talk" }
         ]
       })
     });
@@ -52,15 +49,13 @@ figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
     const data = await response.json();
     if (data.error || !data.choices.length) {
       console.error(data || 'No response from OpenAI API')
-      notifyInFigma('Error: No response from OpenAI API');
+			figma.notify('Error: No response from OpenAI API', {timeout: 2000});
     } else {
-      const parsedResponse = parseOpenAIResponse(data);
-      sendMessageToUI('parsed_response', parsedResponse);
-      DO_SOMETHING_WITH_RESPONSE(parsedResponse);
+      DO_SOMETHING_WITH_RESPONSE(data);
     }
   }
-  sendMessageToUI('set_loading', {isLoading: false });
 }
+
 
 
 // ****************************************************************************************************************************************
@@ -68,15 +63,8 @@ figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
 // view the helper functions below to see how you can interact with the figma document
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const DO_SOMETHING_WITH_RESPONSE = (response: any) => {
-  notifyInFigma(`Response from OpenAI: ${JSON.stringify(response)}`); // this is how you show a message in the UI
-  const titleNode = getLayerFromSelectionWithTitle('__title');
-  const statusNode = getLayerFromSelectionWithTitle('__status');
-  const descriptionNode = getLayerFromSelectionWithTitle('__description');
-  replaceTextOfNode(titleNode as TextNode, response.title);
-  replaceTextOfNode(descriptionNode as TextNode, response.description);
-  changeVariantOfComponent(statusNode as InstanceNode, 'type', response.status) // TO DO: I THINK WE CAN ADD THIS AS AN EXTENSION SNIPPET
-  return response;
+const DO_SOMETHING_WITH_RESPONSE = (data: any) => {
+  
 }
 
 
@@ -107,10 +95,9 @@ const DO_SOMETHING_WITH_RESPONSE = (response: any) => {
   }
 
   // this is a snippet to replace the text of the selected nodes
-  async function replaceMultipleNodesText(textArray: string[]) {
-    const nodes = figma.currentPage.selection as TextNode[]
-    nodes.forEach(async (node, index) => {
-      await replaceTextOfNode(node, textArray[index]);
+  async function replaceText(nodes: TextNode[], text: string) {
+    nodes.forEach(async (node) => {
+      await replaceTextOfNode(node, text);
     });
   }
 
@@ -129,7 +116,7 @@ const DO_SOMETHING_WITH_RESPONSE = (response: any) => {
         } 
         
       } else {
-        notifyInFigma('Please select a component');
+        figma.notify('Please select a component!', {timeout: 2000}); // this is how you show an alert/toast inside the figma the UI
       }
   }
 
@@ -174,15 +161,6 @@ const parseOpenAIResponse = (response: any) => {
 
   const parsedResponse = JSON.parse(content).result;
   return parsedResponse;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const sendMessageToUI = (type:string, message: any = {}) => {
-  figma.ui.postMessage({type: type, message});
-}
-
-const notifyInFigma = (message: string, timeout: number = 2000) => {
-  figma.notify(message, {timeout: timeout});
 }
 
 const getLayerFromSelectionWithTitle = (title: string) => {

@@ -1,8 +1,9 @@
-<!--    THIS IS THE UI OF THE FIGMA PLUGIN.
-        IT CONNECTS TO THE OPENAI API.
-        WHEN WE RECEIVE A MESSAGE FROM THE BACK-END, WE CAN USE IT TO UPDATE THE UI.
-        WE UPDATE THE FIGMA UI BY SENDING MESSAGES TO CODE.TS like: "parent.postMessage({ pluginMessage: { type: 'INSERT MESSAGE HERE AS A STRING' } }, '*')"
--->
+<!-- 
+
+  THIS IS THE UI OF THE FIGMA PLUGIN.
+  IT CONNECTS TO THE OPENAI API.
+  WHEN WE RECEIVE A MESSAGE FROM THE BACK-END, WE CAN USE IT TO UPDATE THE UI.
+  WE UPDATE THE FIGMA UI BY SENDING MESSAGES TO CODE.TS like: "parent.postMessage({ pluginMessage: { type: 'INSERT MESSAGE HERE AS A STRING' } }, '*')"
 
 <style>
   .ui-container {
@@ -21,7 +22,11 @@
 </style>
 
 <div class="ui-container">
-  Your UI goes here!
+  <textarea id="prompt-text" placeholder="Enter your prompt here">
+    Generate content for a sample GitHub issue about React
+  </textarea>
+  <button id="submit">Submit</button>
+  <button id="ping">Ping</button>
   <code id="parsed-response">API Response will appear here</code>
 </div>
 
@@ -45,4 +50,14 @@
     }
   }
 
+  document.getElementById('ping').onclick = () => {
+    parent.postMessage({ pluginMessage: { type: 'ping' } }, '*')
+  }
+
+  document.getElementById('submit').onclick = () => {
+    const promptText = document.getElementById('prompt-text').value
+    parent.postMessage({ pluginMessage: { type: 'generate-ai', prompt: promptText } }, '*')
+  }
+
 </script>
+-->
