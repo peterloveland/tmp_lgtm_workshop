@@ -38,7 +38,7 @@ figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
             content: `
               You are a world class assistant to a user who needs you to help them. The user will give you a certain prompt and you will do as they say.
               You will never respond with anything other than the response JSON.
-              You will respond in an object that contains matches this schema: { result: { title: string } }
+              You will respond in an object that matches this schema: { result: { title: string } }
             `,
           },
           { role: 'user', content: "Generate content for a design conference talk" }
