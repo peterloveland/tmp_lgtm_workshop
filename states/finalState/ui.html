@@ -1,22 +1,33 @@
-<!--    THIS IS THE UI OF THE FIGMA PLUGIN.
-        IT CONNECTS TO THE OPENAI API.
-        WHEN WE RECEIVE A MESSAGE FROM THE BACK-END, WE CAN USE IT TO UPDATE THE UI.
-        WE UPDATE THE FIGMA UI BY SENDING MESSAGES TO CODE.TS like: "parent.postMessage({ pluginMessage: { type: 'INSERT MESSAGE HERE AS A STRING' } }, '*')"
--->
+<!-- 
 
-<!-- <style>
+  THIS IS THE UI OF THE FIGMA PLUGIN.
+  IT CONNECTS TO THE OPENAI API.
+  WHEN WE RECEIVE A MESSAGE FROM THE BACK-END, WE CAN USE IT TO UPDATE THE UI.
+  WE UPDATE THE FIGMA UI BY SENDING MESSAGES TO CODE.TS like: "parent.postMessage({ pluginMessage: { type: 'INSERT MESSAGE HERE AS A STRING' } }, '*')"
+
+<style>
   .ui-container {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    font-family: "Inter", sans-serif;
+  }
+
+  #parsed-response {
+    color: gray;
+    font-size: 12px;
+    border-top: 1px solid lightgray;
+    padding-top: 12px;
   }
 </style>
 
 <div class="ui-container">
-  <textarea id="prompt-text">Generate content for a sample issue about React</textarea>
-  <button id="submit" type="button">Submit</button>
-  <p id="parsed">No response yet</p>
+  <textarea id="prompt-text" placeholder="Enter your prompt here">
+    Generate content for a sample GitHub issue about React
+  </textarea>
+  <button id="submit">Submit</button>
   <button id="ping">Ping</button>
+  <code id="parsed-response">API Response will appear here</code>
 </div>
 
 <script>
@@ -29,14 +40,9 @@
       alert("Pong")
     }
 
-    if (type === 'set_loading') {
-      document.getElementById('submit').innerText = isLoading ? 'Generating…' : 'Submit'
+    if (type === 'parsed-response') {
+      document.getElementById('parsed-response').innerText = message ? JSON.stringify(message) : ''
     }
-
-    if (type === 'parsed_response') {
-      document.getElementById('parsed').innerText = message ? JSON.stringify(message) : ''
-    }
-
 
     // here we listen to the message from the back-end. This is looking for a message with the type "update-ui"
     if (type === 'update-ui') {
@@ -44,15 +50,14 @@
     }
   }
 
-  // Here we list for the click events on the buttons. You could do this much nicer in React.
-  document.getElementById('submit').onclick = () => {
-    const prompt = document.getElementById('prompt-text').value
-    // We need to send a message to Figma itself, we do that with parent.postMessage
-    parent.postMessage({ pluginMessage: { type: 'generate-ai', prompt } }, '*')
-  }
-
   document.getElementById('ping').onclick = () => {
     parent.postMessage({ pluginMessage: { type: 'ping' } }, '*')
   }
 
-</script> -->
+  document.getElementById('submit').onclick = () => {
+    const promptText = document.getElementById('prompt-text').value
+    parent.postMessage({ pluginMessage: { type: 'generate-ai', prompt: promptText } }, '*')
+  }
+
+</script>
+-->
