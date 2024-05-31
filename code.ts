@@ -1,5 +1,6 @@
 const OPENAI_API_KEY = ''; // replace with your actual API key
 /* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 // This file holds the main code for our plugin. This file is where we make  a call to the OpenAI API
 // and then do something with the response in the figma document.
@@ -14,15 +15,15 @@ figma.ui.resize(300, 500)
 // THIS IS WHERE WE LISTEN FOR MESSAGES FROM THE UI AND THEN DO SOMETHING WITH THEM
 figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
   
-  if (msg.type === '') { // we listen for the message type 'ping!'
+  if (msg.type === 'ping') { // we listen for the message type 'ping!'
     figma.notify('Ping!', {timeout: 2000}); // this is how you show an alert/toast inside the figma the UI
     setTimeout(() => {
       figma.ui.postMessage({type: 'pong'});
     }, 2000);
-    
   }
   
   if (msg.type === 'generate-ai') {
+    figma.notify('Submitted!', {timeout: 2000}); // this is how you show an alert/toast inside the figma the UI
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -35,13 +36,11 @@ figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
         messages: [
           {
             role: 'system',
-            content: `
-              You are a world class assistant to a user who needs you to help them. The user will give you a certain prompt and you will do as they say.
+            content: `You are a world class assistant to a user who needs you to help them. The user will give you a certain prompt and you will do as they say.
               You will never respond with anything other than the response JSON.
-              You will respond with an object that matches this schema: { result: { title: string } }
-            `,
+              You will respond with an object that matches this schema: { result: { title: string } }`,
           },
-          { role: 'user', content: "Generate content for a design conference talk" }
+          { role: 'user', content: "generate content for a ice cream shop" }
         ]
       })
     });
@@ -51,20 +50,16 @@ figma.ui.onmessage = async  (msg: {type: string, prompt: string}) => {
       console.error(data || 'No response from OpenAI API')
 			figma.notify('Error: No response from OpenAI API', {timeout: 2000});
     } else {
-      DO_SOMETHING_WITH_RESPONSE(data);
+      const parsedResponse = parseOpenAIResponse(data);
+      figma.ui.postMessage({type: 'parsed-response', message: data});
+      do_something_with_response(parsedResponse);
     }
   }
 }
 
+const do_something_with_response = (data: any) => {
+  // ADD YOUR FIGMA FUNCTIONS HERE
 
-
-// ****************************************************************************************************************************************
-// THIS IS WHERE YOU CAN WRITE YOUR FUNCTION THAT WILL TAKE THE RESPONSE FROM OPENAI (WHICH IS AN ARRAY) AND DO SOMETHING WITH IT IN FIGMA
-// view the helper functions below to see how you can interact with the figma document
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const DO_SOMETHING_WITH_RESPONSE = (data: any) => {
-  
 }
 
 
@@ -123,6 +118,7 @@ const DO_SOMETHING_WITH_RESPONSE = (data: any) => {
 
   // This is a simple way to get started, change the text of a node.
   async function replaceTextOfNode(node: TextNode, newText: string) {
+    // node = node as TextNode;
     await figma.loadFontAsync(node.fontName as FontName);
     node.characters = newText;
   }

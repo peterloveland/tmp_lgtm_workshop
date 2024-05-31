@@ -21,7 +21,9 @@
 </style>
 
 <div class="ui-container">
-  Your UI goes here!
+  <textarea id="prompt-text">Generate content for a sample GitHub issue about React</textarea>
+  <button id="submit">Submit</button>
+  <button id="ping">Ping</button>
   <code id="parsed-response">API Response will appear here</code>
 </div>
 
@@ -32,7 +34,7 @@
 
     // If we receive an event of type "pong", show an alert.
     if (type === 'pong') {
-      alert("Pong")
+      alert("Pong!")
     }
 
     if (type === 'parsed-response') {
@@ -46,6 +48,13 @@
   }
 
   // CLICK HANDLERS GO HERE:
+  document.getElementById('ping').onclick = () => {
+    parent.postMessage({ pluginMessage: { type: 'ping' } }, '*')
+  }
 
+  document.getElementById('submit').onclick = () => {
+    const promptText = document.getElementById('prompt-text').value
+    parent.postMessage({ pluginMessage: { type: 'generate-ai', prompt: promptText } }, '*')
+  }
 
 </script>
