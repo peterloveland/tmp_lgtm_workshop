@@ -30,7 +30,7 @@
 //         'Authorization': `Bearer ${OPENAI_API_KEY}`
 //       },
 //       body: JSON.stringify({
-//         model: 'gpt-4-turbo',
+//         model: 'gpt-3.5-turbo',
 //         response_format: {'type':'json_object'},
 //         messages: [
 //           {
@@ -39,7 +39,7 @@
 //               You are a world class assistant to a user who needs you to help them. The user will give you a certain prompt and you will do as they say.
 //               You will never respond with anything other than the response JSON.
 //               You will respond with an object that matches this schema: { result: { title: string, description: string, status: string } }
-//               Status is randomly picked from either 'open', 'completed' or 'not planned'.
+//               Think of a number between 1 and 3. 1. If the number is 1, status is 'open'. If the number is 2, status is 'closed'. If the number is 3, status is 'not_planned'.
 //             `,
 //           },
 //           { role: 'user', content: msg.prompt }
@@ -67,12 +67,12 @@
 // // eslint-disable-next-line @typescript-eslint/no-explicit-any
 // const DO_SOMETHING_WITH_RESPONSE = (data: any) => {
 //   figma.ui.postMessage({type: 'parsed-response', message: data});
-// 	const titleNode = getLayerFromSelectionWithTitle('__title') as TextNode;
+//   const titleNode = getLayerFromSelectionWithTitle('__title') as TextNode;
 // 	const descriptionNode = getLayerFromSelectionWithTitle('__description') as TextNode;
 //   const statusNode = getLayerFromSelectionWithTitle('__status') as InstanceNode;
-//   replaceTextOfNode(descriptionNode, data.description);
-// 	replaceTextOfNode(titleNode, data.title);
-//   changeVariantOfComponent(statusNode, 'type', data.status);
+//   replaceTextOfNode(titleNode, data.title);
+// 	replaceTextOfNode(descriptionNode, data.description);
+// 	changeVariantOfComponent(statusNode, 'issue_status', data.status)
 // }
 
 
