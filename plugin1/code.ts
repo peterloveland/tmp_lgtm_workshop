@@ -154,6 +154,23 @@ async function changeFillOfNode(
 // These can mostly be ignored, they are just helper functions to make the code more readable and quick to write.
 // Feel free to use them or modify them as you see fit.
 
+const getSpecificLayersFromSelection = (nodes: any, title: string): any[] => {
+  const result: any[] = [];
+  for (const node of nodes) {
+    if (node.name === title) {
+      result.push(node);
+    }
+    if ("children" in node) {
+      const childrenResult = getSpecificLayersFromSelection(
+        node.children,
+        title
+      );
+      result.push(...childrenResult);
+    }
+  }
+  return result;
+};
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const parseOpenAIResponse = (response: any) => {
   const content = response.choices[0].message.content;
