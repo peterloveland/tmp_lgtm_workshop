@@ -21,7 +21,7 @@
 </style>
 
 <div class="ui-container">
-    <textarea id="prompt-text">Generate content for a sample GitHub issue about React</textarea>
+    <!-- <textarea id="prompt-text">Generate content for a sample GitHub issue about React</textarea> -->
     <button id="submit">Submit</button>
     <button id="ping">Ping</button>
     <code id="parsed-response">API Response will appear here</code>
@@ -53,7 +53,7 @@
     }
 
     document.getElementById('submit').onclick = () => {
-        const promptText = document.getElementById('prompt-text').value
+        const promptText = document.getElementById('prompt-text') ? document.getElementById('prompt-text').value : ""
         parent.postMessage({ pluginMessage: { type: 'generate-ai', prompt: promptText } }, '*')
     }
 
