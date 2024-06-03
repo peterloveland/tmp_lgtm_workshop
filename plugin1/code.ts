@@ -88,10 +88,16 @@ function getAllTextCharactersOfNodes() {
 }
 
 // this is a snippet to replace the text of the selected nodes
-async function replaceText(nodes: TextNode[], text: string) {
+async function replaceTextOfNodes(nodes: TextNode[], text: string) {
   nodes.forEach(async (node) => {
     await replaceTextOfNode(node, text);
   });
+}
+
+// This is a simple way to get started, change the text of a node.
+async function replaceTextOfNode(node: TextNode, newText: string) {
+  await figma.loadFontAsync(node.fontName as FontName);
+  node.characters = newText;
 }
 
 // This is a snippet to change the variant of a component.
@@ -114,13 +120,6 @@ async function changeVariantOfComponent(
   } else {
     figma.notify("Please select a component!", { timeout: 2000 }); // this is how you show an alert/toast inside the figma the UI
   }
-}
-
-// This is a simple way to get started, change the text of a node.
-async function replaceTextOfNode(node: TextNode, newText: string) {
-  // node = node as TextNode;
-  await figma.loadFontAsync(node.fontName as FontName);
-  node.characters = newText;
 }
 
 // snippet to change the fill of a node
