@@ -10,7 +10,72 @@ figma.ui.onmessage = async (msg: { type: string; prompt: string }) => {
   if (msg.type === "create-shapes") {
     try {
       // Lesson 4 content here
-      //
+      const parentFrame = figma.createFrame();
+      parentFrame.name = "Look, some API generated content!";
+      // auto size
+      parentFrame.layoutMode = "VERTICAL";
+      parentFrame.counterAxisSizingMode = "AUTO";
+      parentFrame.primaryAxisSizingMode = "AUTO";
+      parentFrame.itemSpacing = 10;
+      parentFrame.cornerRadius = 10;
+      // padding
+      parentFrame.paddingLeft = 10;
+      parentFrame.paddingRight = 10;
+      parentFrame.paddingTop = 10;
+      parentFrame.paddingBottom = 10;
+
+      // add some text
+      const text = figma.createText();
+      text.name = "Text";
+      await figma.loadFontAsync({ family: "SF Pro Text", style: "Semibold" });
+      text.fontName = { family: "SF Pro Text", style: "Semibold" };
+      text.characters = "Look I can generate some text!";
+      text.fontSize = 14;
+      text.x = 10;
+      text.y = 10;
+
+      // add a dividing rectangle
+      const rect = figma.createRectangle();
+      rect.name = "Rectangle";
+      rect.fills = [{ type: "SOLID", color: { r: 0.8, g: 0.8, b: 0.8 } }];
+      rect.cornerRadius = 5;
+      rect.resize(200, 1);
+      // full width
+      rect.layoutAlign = "STRETCH";
+
+      parentFrame.appendChild(text);
+      parentFrame.appendChild(rect);
+
+      // add another frame, horizontally stacked with 8px spacing
+      const buttonContainer = figma.createFrame();
+      buttonContainer.name = "Button container";
+      buttonContainer.layoutMode = "HORIZONTAL";
+      buttonContainer.counterAxisSizingMode = "AUTO";
+      buttonContainer.primaryAxisSizingMode = "AUTO";
+      buttonContainer.itemSpacing = 8;
+      buttonContainer.fills = [];
+
+      // First we import the component from the library, we assign the result to buttonComponentFromPrimer
+      // This won't add anything to Figma, this is just setting up the component
+      const buttonComponentFromPrimer = await figma.importComponentByKeyAsync(
+        "cb00e72ab4a6c96a34f8952eb917536fae2b9abb"
+      );
+      // Then we generate an instance of that component
+      // This will now add it to the Figma doc
+      const cancelButton = buttonComponentFromPrimer.createInstance();
+      // The primer button doesn't expose the text as a prop, so we've made a wrapper to do this for you
+      setButtonText(cancelButton, "Cancel");
+      // Let's do the same but with a submit button
+      const submitButton = buttonComponentFromPrimer.createInstance();
+      // This time we want to set the variant to be primary
+      // variant is a property on the component, we can set this via the API with:
+      submitButton.setProperties({ variant: "primary" });
+      setButtonText(submitButton, "Submit");
+      // now add these 2 buttons to the buttonContainer (the frame)
+      buttonContainer.appendChild(cancelButton);
+      buttonContainer.appendChild(submitButton);
+      // and then add the buttonContainer to the parentFrame
+      parentFrame.appendChild(buttonContainer);
     } catch (error) {
       figma.notify("Error: " + error, { timeout: 2000, error: true });
       console.error(error);
@@ -20,36 +85,9 @@ figma.ui.onmessage = async (msg: { type: string; prompt: string }) => {
 
   if (msg.type === "test-eval") {
     try {
-      const labelComponent = await figma.importComponentByKeyAsync(
-        "257f441df263d1250585c28b48064ac7226187d6"
+      eval(
+        `(async () => { figma.notify("This is a string that's converted to JS!" )})()`
       );
-      const labels = [
-        "React PR",
-        "Code Review",
-        "Merge Request",
-        "React Update",
-        "Feature Addition",
-      ].map(async (text, index) => {
-        const instance = labelComponent.createInstance();
-        instance.setProperties({
-          size: "medium - 20px (default)",
-          variant: ["default", "accent", "success", "attention", "done"][index],
-        });
-        const textNode = instance.findChild(
-          (node) => node.type === "TEXT"
-        ) as TextNode;
-        await figma.loadFontAsync({ family: "SF Pro Text", style: "Semibold" });
-        textNode.characters = text;
-        return instance;
-      });
-      const labelInstances = await Promise.all(labels);
-      const autolayout = figma.createFrame();
-      autolayout.layoutMode = "HORIZONTAL";
-      autolayout.primaryAxisSizingMode = "AUTO";
-      autolayout.counterAxisSizingMode = "AUTO";
-      autolayout.itemSpacing = 20;
-      labelInstances.forEach((label) => autolayout.appendChild(label));
-      figma.currentPage.appendChild(autolayout);
     } catch (error) {
       figma.notify("Error: " + error, { timeout: 2000, error: true });
     }
@@ -197,7 +235,6 @@ const do_something_with_ai_response = async (data: any) => {
     eval(`
     (async () => {
       ${data}
-
     })()`);
   } catch (error) {
     figma.notify("Error: " + error, { timeout: 2000, error: true });
