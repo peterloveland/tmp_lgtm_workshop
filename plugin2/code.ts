@@ -1,10 +1,5 @@
-const OPENAI_API_KEY = ""; // replace with your actual API key
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
-// This file holds the main code for our plugin. This file is where we make  a call to the OpenAI API
-// and then do something with the response in the figma document.
-// We can have access to the figma document via the figma global object. (e.g. figma.currentPage.selection)
 
 figma.showUI(__html__);
 
@@ -262,12 +257,12 @@ figma.ui.onmessage = async (msg: { type: string; prompt: string }) => {
         type: "parsed-response",
         message: parsedResponse,
       });
-      do_something_with_response(parsedResponse);
+      do_something_with_ai_response(parsedResponse);
     }
   }
 };
 
-const do_something_with_response = async (data: any) => {
+const do_something_with_ai_response = async (data: any) => {
   // ADD YOUR FIGMA FUNCTIONS HERE
   try {
     eval(`
@@ -281,87 +276,6 @@ const do_something_with_response = async (data: any) => {
   }
 };
 
-//   ______ _                         _          _
-//  |  ____(_)                       | |        | |
-//  | |__   _  __ _ _ __ ___   __ _  | |__   ___| |_ __   ___ _ __ ___
-//  |  __| | |/ _` | '_ ` _ \ / _` | | '_ \ / _ \ | '_ \ / _ \ '__/ __|
-//  | |    | | (_| | | | | | | (_| | | | | |  __/ | |_) |  __/ |  \__ \
-//  |_|    |_|\__, |_| |_| |_|\__,_| |_| |_|\___|_| .__/ \___|_|  |___/
-//             __/ |                              | |
-//            |___/                               |_|
-
-// These are small functions we've written to help you interact with the figma document. You can use them in your code above.
-
-// FAIL
-// this is a snippet to get the color of the selected nodes
-function getAppliedColorOfNodes() {
-  const nodes = figma.currentPage.selection as TextNode[];
-  return nodes.map((node) => "fills" in node && node.fills);
-}
-
-// this is a snippet to get the text of the selected nodes
-function getAllTextCharactersOfNodes() {
-  const nodes = figma.currentPage.selection as TextNode[];
-  return nodes.map((node) => node.characters);
-}
-
-// this is a snippet to replace the text of the selected nodes
-async function replaceText(nodes: TextNode[], text: string) {
-  nodes.forEach(async (node) => {
-    // await replaceTextOfNode(node, text);
-  });
-}
-
-// This is a snippet to change the variant of a component.
-// You might want to make your component in Figma from scratch, make it simple with easy naming.
-// This snippet won't handle nested instances.
-// propName is the name of the property you want to change, propValue is the value you want to change it to.
-async function changeVariantOfComponent(
-  node: InstanceNode,
-  propName: string,
-  propValue: string
-) {
-  if (node.type === "INSTANCE") {
-    try {
-      node.setProperties({
-        [propName]: propValue,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  } else {
-    figma.notify("Please select a component!", { timeout: 2000 }); // this is how you show an alert/toast inside the figma the UI
-  }
-}
-
-// This is a simple way to get started, change the text of a node.
-async function replaceTextOfNodes(nodes: TextNode[], newText: string) {
-  // node = node as TextNode;
-  for (const node of nodes) {
-    await figma.loadFontAsync(node.fontName as FontName);
-    node.characters = newText;
-  }
-}
-
-// snippet to change the fill of a node
-// you could ask OpenAI to give you a color and then use this function to change the fill of a node.
-// Could be used to set Labels? Severity? Status? etc.
-// Sample usage: changeFillOfNode(titleNode as TextNode, {r: 107, g: 185, b: 123});
-async function changeFillOfNode(
-  node: TextNode | FrameNode | InstanceNode,
-  color: { r: number; g: number; b: number }
-) {
-  const r = color.r / 255;
-  const g = color.g / 255;
-  const b = color.b / 255;
-  if (node.type === "TEXT") {
-    // to-do: add support for other node types
-    node.setRangeFills(0, node.characters.length, [
-      { type: "SOLID", color: { r, g, b } },
-    ]);
-  }
-}
-
 // ****************************************************************************************************************************************
 //  __          __                 _            _                          __                          _     _
 //  \ \        / /                | |          | |                        / _|                        | |   (_)
@@ -374,31 +288,6 @@ async function changeFillOfNode(
 // These can mostly be ignored, they are just helper functions to make the code more readable and quick to write.
 // Feel free to use them or modify them as you see fit.
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const parseOpenAIResponse = (response: any) => {
-  const content = response.choices[0].message.content;
-
-  const parsedResponse = JSON.parse(content).result;
-  return parsedResponse;
-};
-
-const getSpecificLayersFromSelection = (nodes: any, title: string): any[] => {
-  const result: any[] = [];
-  for (const node of nodes) {
-    if (node.name === title) {
-      result.push(node);
-    }
-    if ("children" in node) {
-      const childrenResult = getSpecificLayersFromSelection(
-        node.children,
-        title
-      );
-      result.push(...childrenResult);
-    }
-  }
-  return result;
-};
-
 const setButtonText = async (instance: InstanceNode, text: string) => {
   try {
     const textNode = instance.findChild(
@@ -410,26 +299,3 @@ const setButtonText = async (instance: InstanceNode, text: string) => {
     console.error(error);
   }
 };
-
-// const basicSelectionStructure = (nodes: any[]) => {
-//   // loop through the current selection. We just want the node type. If the node has children recursively loop through these.
-//   // the stucture should look sometihng like this:
-//   // [
-//   //   {type: 'frame', id: '123', children: [
-//   //     {type: 'frame', id: 'ansdasd', children: [
-//   //       {type: 'text', id: '12340nd'},
-//   //       {type: 'rectangle', id: '12340nd'}
-//   //     ]}
-//   //   ]},
-//   //   {type: 'circle', id: '24323'}
-//   // ]
-
-//   // for each node in nodes
-//     nodes.forEach(async (node) => {
-//       const doesNodeHaveChildren(node)
-//     });
-
-// };
-// const doesNodeHaveChildren = (node:any) => {
-//   node.children
-// };
