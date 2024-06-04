@@ -17,20 +17,25 @@
     font-size: 12px;
     border-top: 1px solid lightgray;
     padding-top: 12px;
+    width: 100%;
+    text-wrap: wrap;
   }
 </style>
 
 <div class="ui-container">
-  <textarea id="prompt-text">Generate content for a sample GitHub issue about React</textarea>
+  <button id="create-shapes">create-shapes</button>
+  <button id="test-eval">Test eval</button>
+  <textarea id="prompt-text" placeholder="Prompt text here"></textarea>
   <button id="submit">Submit</button>
-  <button id="ping">Ping</button>
-  <code id="parsed-response">API Response will appear here</code>
+  <button id="get-component-details">get-component-details</button>
+  <pre id="parsed-response">API Response will appear here</pre>
+
 </div>
 
 <script>
   // Listen for messages from the back-end
   onmessage = (event) => {
-    const { type, message, isLoading } = event.data.pluginMessage
+    const { type, message } = event.data.pluginMessage
 
     // If we receive an event of type "pong", show an alert.
     if (type === 'pong') {
@@ -38,7 +43,7 @@
     }
 
     if (type === 'parsed-response') {
-      document.getElementById('parsed-response').innerText = message ? JSON.stringify(message) : ''
+      document.getElementById('parsed-response').innerText = message ? JSON.stringify(message, null, 5) : 'No response'
     }
 
     // here we listen to the message from the back-end. This is looking for a message with the type "update-ui"
@@ -48,13 +53,22 @@
   }
 
   // CLICK HANDLERS GO HERE:
-  document.getElementById('ping').onclick = () => {
-    parent.postMessage({ pluginMessage: { type: 'ping' } }, '*')
-  }
 
   document.getElementById('submit').onclick = () => {
-    const promptText = document.getElementById('prompt-text').value
+    const promptText = document.getElementById('prompt-text')?.value || ''
     parent.postMessage({ pluginMessage: { type: 'generate-ai', prompt: promptText } }, '*')
+  }
+
+  document.getElementById('get-component-details').onclick = () => {
+    parent.postMessage({ pluginMessage: { type: 'get-component-details' } }, '*')
+  }
+
+  document.getElementById('create-shapes').onclick = () => {
+    parent.postMessage({ pluginMessage: { type: 'create-shapes' } }, '*')
+  }
+
+  document.getElementById('test-eval').onclick = () => {
+    parent.postMessage({ pluginMessage: { type: 'test-eval' } }, '*')
   }
 
 </script>
