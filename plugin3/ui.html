@@ -20,11 +20,26 @@
     width: 100%;
     text-wrap: wrap;
   }
+
+  #reprod {
+    color: gray;
+    font-size: 12px;
+    border-top: 1px solid lightgray;
+    padding-top: 12px;
+    width: 100%;
+    text-wrap: wrap;
+  }
 </style>
 
 <div class="ui-container">
   <button id="get-picture">get-picture</button>
-  <pre id="parsed-response">API Response will appear here</pre>
+  <p id="parsed-response">API Response will appear here</p>
+
+  <!-- // accordion -->
+  <details>
+    <summary>Reproduction instructions</summary>
+    <pre id="reprod">Reproduction instructions will appear heere</pre>
+  </details>
 
 </div>
 
@@ -39,7 +54,8 @@
     }
 
     if (type === 'parsed-response') {
-      document.getElementById('parsed-response').innerText = message ? JSON.stringify(message, null, 5) : 'No response'
+      document.getElementById('parsed-response').innerText = message ? JSON.stringify(message.review, null, 5) : 'No response'
+      document.getElementById('reprod').innerText = message ? JSON.stringify(message.recreateInstructions, null, 5) : 'No response'
     }
 
     // here we listen to the message from the back-end. This is looking for a message with the type "update-ui"
