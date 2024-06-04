@@ -31,7 +31,7 @@ figma.ui.onmessage = async (msg: { type: string; prompt: string }) => {
         Authorization: `Bearer ${OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "gpt-3.5-turbo",
+        model: "gpt-4o",
         response_format: { type: "json_object" },
         messages: [
           {
