@@ -116,32 +116,9 @@ figma.ui.onmessage = async (msg: { type: string; prompt: string }) => {
           {
             role: "system",
             content: `
-  You are a Figma plugin code generating assistant that outputs JSON as a response like { result: string }
-              The result is the required code to generate something in Figma using the plugin api which we will then eval() and run.
-             	We just want a single lined string, don't add anything like \n
-              you will JUST respond with the result json. Never close the plugin. 
-              Whenever you need to write something in text, first load in the required font with loadFontAsync. This will always be family: 'SF Pro Text', style: 'Semibold'. Never change this.
 
-              Create instances of components like const instance = buttonComponent.createInstance();
-              properties are set with e.g. instance.setProperties({ 'stringProp': 'value1', 'trailingVisual?#20826:0': true });
-              
-              The button has a schema like: {"key":"cb00e72ab4a6c96a34f8952eb917536fae2b9abb","properties":{"leadingVisual#137:0":{"type":"INSTANCE_SWAP","defaultValue":"2012:20","preferredValues":[]},"counter?#13825:134":{"type":"BOOLEAN","defaultValue":false},"dropdown?#13825:201":{"type":"BOOLEAN","defaultValue":false},"trailingVisual?#20826:0":{"type":"BOOLEAN","defaultValue":false},"leadingVisual?#13825:0":{"type":"BOOLEAN","defaultValue":false},"trailingVisual#20826:151":{"type":"INSTANCE_SWAP","defaultValue":"2012:18","preferredValues":[{"type":"COMPONENT","key":"1419c78a69cc37c91d3f840eb161148711b0ce94"},{"type":"COMPONENT","key":"a63928690869caaa0cf45849391532e34a76279e"},{"type":"COMPONENT","key":"3548e52192e1161e3354b48574bbba741dd5f1f7"}]},"variant":{"type":"VARIANT","defaultValue":"secondary","variantOptions":["primary","secondary","danger","invisible"]},"size":{"type":"VARIANT","defaultValue":"medium","variantOptions":["small","medium","large"]},"state":{"type":"VARIANT","defaultValue":"rest","variantOptions":["rest","focus","hover","pressed","disabled","inactive"]},"alignContent":{"type":"VARIANT","defaultValue":"center","variantOptions":["center","start"]}},"node":{"id":"2065:20795"}}
-              A label has a schema like {"key":"257f441df263d1250585c28b48064ac7226187d6","properties":{"text#18973:0":{"type":"TEXT","defaultValue":"Label"},"size":{"type":"VARIANT","defaultValue":"large - 24px","variantOptions":["medium - 20px (default)","large - 24px"]},"variant":{"type":"VARIANT","defaultValue":"default","variantOptions":["default","accent","success","attention","severe","danger","done","sponsors"]}},"node":{"id":"2067:20910"}}
-
-              Always start response by importing the relevant component from the library: const buttonComponent = await figma.importComponentByKeyAsync('{relevant_key}'); never make up a key, it won't work.
-							
-              For example to set the size of the component to 'small' and 'primary' you would do instance.setProperties({ 'size': 'small', 'variant': 'primary' });
-              If you think you need to set some text, but can't find an obvious property that might change the text, search for a text node in the instances children, e.g. const textNode = instance.findChild((node) => node.type === 'TEXT');await figma.loadFontAsync({ family: 'SF Pro Text', style: 'Semibold' });textNode.characters = text; Always family: 'SF Pro Text', style: 'Semibold'. Never change this.
-
-              If the user asks for more than one element, wrap this content in a horizontal autolayout, unless otherwise specified. Default to layoutMode to 'HORIZONTAL' and the primaryAxisSizingMode to 'AUTO' and counterAxisSizingMode to 'AUTO' 8px gap between elements
-              If they only ask for one, just return the element.
-            ],
             `,
           },
-          // { IDEA MAYBE:
-          //   role: "user",
-          //   content: `the current selection looks like this: ${figma.currentPage.selection}. The c`,
-          // },
           { role: "user", content: msg.prompt },
         ],
         temperature: 0.2,
