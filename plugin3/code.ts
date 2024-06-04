@@ -22,11 +22,6 @@ figma.ui.onmessage = async (msg: { type: string; prompt: string }) => {
         const base64Image = figma.base64Encode(bytes);
         const imageDataUrl = `data:image/png;base64,${base64Image}`;
 
-        console.log(base64Image);
-        console.log(imageDataUrl);
-        // Create message content
-        const messageContent = `What’s in this image? \n![image](${imageDataUrl})`;
-
         // Send request to OpenAI API
         console.log("RUNNING");
         const response = await fetch(
@@ -72,7 +67,7 @@ Make this a wireframe, use basic shapes and text, and just gray colors. No need 
                   content: [
                     {
                       type: "text",
-                      text: "You are a helpful and polite UI reviewing bot, please tell me how to improve this design. Give 3 brief suggestions in a numbered list. Add the response to a JSON object, { result: { review: string, recreateInstructions: string } }.",
+                      text: "You are a helpful and polite UI reviewing bot, please tell me how to improve this design. Give 3 brief suggestions in a numbered list. Try to focus on the main content and use good UX/UI/accessibility practices. Add the response to a JSON object, { result: { review: string, recreateInstructions: string } }.",
                     },
                     // {
                     //   type: "text",
@@ -91,7 +86,6 @@ Make this a wireframe, use basic shapes and text, and just gray colors. No need 
                   ],
                 },
               ],
-              temperature: 0.2,
             }),
           }
         );

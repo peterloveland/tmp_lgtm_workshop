@@ -14,7 +14,7 @@
 
   #parsed-response {
     color: gray;
-    font-size: 12px;
+    font-size: 14px;
     border-top: 1px solid lightgray;
     padding-top: 12px;
     width: 100%;
@@ -29,16 +29,24 @@
     width: 100%;
     text-wrap: wrap;
   }
+
+  details {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    font-size: 14px;
+  }
 </style>
 
 <div class="ui-container">
-  <button id="get-picture">get-picture</button>
+  <button id="get-picture">Analyse design</button>
   <p id="parsed-response">API Response will appear here</p>
 
   <!-- // accordion -->
   <details>
-    <summary>Reproduction instructions</summary>
-    <pre id="reprod">Reproduction instructions will appear heere</pre>
+    <summary>Reproduction instructions (WIP)<br />this doesn't quite work but it's close!</summary>
+    <pre id="reprod">Reproduction instructions will appear here</pre>
   </details>
 
 </div>
