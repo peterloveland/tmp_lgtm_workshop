@@ -24,10 +24,9 @@
 
 <div class="ui-container">
   <button id="create-shapes">create-shapes</button>
-  <button id="test-eval">Test eval</button>
+  <button id="get-component-details">get-component-details</button>
   <textarea id="prompt-text" placeholder="Prompt text here"></textarea>
   <button id="submit">Submit</button>
-  <button id="get-component-details">get-component-details</button>
   <pre id="parsed-response">API Response will appear here</pre>
 
 </div>
@@ -65,10 +64,6 @@
 
   document.getElementById('create-shapes').onclick = () => {
     parent.postMessage({ pluginMessage: { type: 'create-shapes' } }, '*')
-  }
-
-  document.getElementById('test-eval').onclick = () => {
-    parent.postMessage({ pluginMessage: { type: 'test-eval' } }, '*')
   }
 
 </script>
