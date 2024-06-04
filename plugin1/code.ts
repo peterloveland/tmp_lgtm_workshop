@@ -6,10 +6,9 @@ const OPENAI_API_KEY = ""; // replace with your actual API key
 // and then do something with the response in the figma document.
 // We can have access to the figma document via the figma global object. (e.g. figma.currentPage.selection)
 
-figma.showUI(__html__);
-
-// resize the UI to fit the content
-figma.ui.resize(300, 500);
+figma.showUI(__html__,
+  { width: 500, height: 500 }
+);
 
 // ****************************************************************************************************************************************
 // THIS IS WHERE WE LISTEN FOR MESSAGES FROM THE UI AND THEN DO SOMETHING WITH THEM
