@@ -219,7 +219,7 @@ figma.ui.onmessage = async (msg: { type: string; prompt: string }) => {
       console.error(data || "No response from OpenAI API");
       figma.notify("Error: No response from OpenAI API", { timeout: 2000 });
     } else {
-      const parsedResponse = parseOpenAIResponse(data);
+      const parsedResponse = parseOpenAIResponse_plugin2(data);
       figma.ui.postMessage({
         type: "parsed-response",
         message: parsedResponse,
@@ -264,4 +264,11 @@ const setButtonText = async (instance: InstanceNode, text: string) => {
   } catch (error) {
     console.error(error);
   }
+};
+
+const parseOpenAIResponse_plugin2 = (response: any) => {
+  console.log("running  parseOpenAIResponse");
+  const content = response.choices[0].message.content;
+  const parsedResponse = JSON.parse(content).result;
+  return parsedResponse;
 };
