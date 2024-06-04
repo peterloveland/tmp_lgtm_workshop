@@ -62,7 +62,7 @@
     }
 
     if (type === 'parsed-response') {
-      document.getElementById('parsed-response').innerText = message ? JSON.stringify(message.review, null, 5) : 'No response'
+      document.getElementById('parsed-response').innerText = message ? message.review : 'No response'
       document.getElementById('reprod').innerText = message ? JSON.stringify(message.recreateInstructions, null, 5) : 'No response'
     }
 

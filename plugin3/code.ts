@@ -30,7 +30,7 @@ figma.ui.onmessage = async (msg: { type: string; prompt: string }) => {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer `,
+              Authorization: `Bearer`,
             },
             body: JSON.stringify({
               model: "gpt-4o",
@@ -67,7 +67,7 @@ Make this a wireframe, use basic shapes and text, and just gray colors. No need 
                   content: [
                     {
                       type: "text",
-                      text: "You are a helpful and polite UI reviewing bot, please tell me how to improve this design. Give 3 brief suggestions in a numbered list. Try to focus on the main content and use good UX/UI/accessibility practices. Add the response to a JSON object, { result: { review: string, recreateInstructions: string } }.",
+                      text: "You are a helpful and polite UI reviewing bot, make some suggestions about this design. They could be things to think about, like concerns about implementation. Or they could be suggestions of thigns to try. Use good UX/UI/accessibility practices. Add the response to a JSON object, { result: { review: string, recreateInstructions: string } }.",
                     },
                     // {
                     //   type: "text",
