@@ -1,9 +1,9 @@
 {
-  "name": "LGTM 2024 AI Plugin",
+  "name": "LGTM 2024 AI Plugin 2",
   "id": "1372138984778615130",
   "api": "1.0.0",
-  "main": "plugin1/code.js",
-  "ui": "plugin1/ui.html",
+  "main": "code.js",
+  "ui": "ui.html",
   "capabilities": [],
   "enableProposedApi": false,
   "documentAccess": "dynamic-page",

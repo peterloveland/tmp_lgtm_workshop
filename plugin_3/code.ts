@@ -1,6 +1,7 @@
+const OPENAI_API_KEY = "";
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 figma.showUI(__html__);
 
 // resize the UI to fit the content
@@ -30,7 +31,7 @@ figma.ui.onmessage = async (msg: { type: string; prompt: string }) => {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer`,
+              Authorization: `Bearer ${OPENAI_API_KEY}`,
             },
             body: JSON.stringify({
               model: "gpt-4o",
@@ -96,7 +97,7 @@ Make this a wireframe, use basic shapes and text, and just gray colors. No need 
           console.error(data || "No response from OpenAI API");
           figma.notify("Error: No response from OpenAI API", { timeout: 2000 });
         } else {
-          const parsedResponse = parseOpenAIResponse_plugin3(data);
+          const parsedResponse = parseOpenAIResponse(data);
           console.log(parsedResponse.recreateInstructions);
           // try {
           //   eval(`
@@ -132,7 +133,7 @@ Make this a wireframe, use basic shapes and text, and just gray colors. No need 
 // These can mostly be ignored, they are just helper functions to make the code more readable and quick to write.
 // Feel free to use them or modify them as you see fit.
 
-const parseOpenAIResponse_plugin3 = (response: any) => {
+const parseOpenAIResponse = (response: any) => {
   console.log("running  parseOpenAIResponse");
   console.log(response);
   const content = response.choices[0].message.content;

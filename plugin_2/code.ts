@@ -1,9 +1,9 @@
+const OPENAI_API_KEY = "";
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-figma.showUI(__html__,
-  { width: 500, height: 500 }
-);
+figma.showUI(__html__, { width: 500, height: 500 });
 
 figma.ui.onmessage = async (msg: { type: string; prompt: string }) => {
   if (msg.type === "create-shapes") {
@@ -132,12 +132,12 @@ figma.ui.onmessage = async (msg: { type: string; prompt: string }) => {
         type: "parsed-response",
         message: parsedResponse,
       });
-      do_something_with_ai_response(parsedResponse);
+      do_something_with_response(parsedResponse);
     }
   }
 };
 
-const do_something_with_ai_response = async (data: any) => {
+const do_something_with_response = async (data: any) => {
   // ADD YOUR FIGMA FUNCTIONS HERE
   try {
     eval(`

@@ -1,0 +1,14 @@
+{
+  "name": "LGTM 2024 AI Plugin 1",
+  "id": "1372138984778615130",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "capabilities": [],
+  "enableProposedApi": false,
+  "documentAccess": "dynamic-page",
+  "editorType": ["figma"],
+  "networkAccess": {
+    "allowedDomains": ["https://api.openai.com"]
+  }
+}
