@@ -6,12 +6,15 @@
 
 <div class="ui-container">
   <div class="content">
-    <button id="create-shapes">create-shapes</button>
-    <button id="test-eval">Test eval</button>
     <textarea id="prompt-text" placeholder="Prompt text here"></textarea>
     <button id="submit">Submit</button>
-    <button id="get-component-details">get-component-details</button>
     <pre id="parsed-response">API Response will appear here</pre>
+    <div class="workshop-helpers">
+      Helpers:
+      <button id="create-shapes">create-shapes</button>
+      <button id="test-eval">Test eval</button>
+      <button id="get-component-details">get-component-details</button>
+    </div>
   </div>
   <p class="loader">Loading...</p>
 </div>
@@ -83,6 +86,12 @@
     text-wrap: wrap;
   }
 
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
   .isLoading {
     opacity: 0.5;
   }
@@ -91,9 +100,21 @@
     display: block;
   }
 
-  .loader {
+  .workshop-helpers {
     position: fixed;
     bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px 16px;
+    background: white;
+    border-top: 1px solid lightgray;
+    font-size: 12px;
+
+  }
+
+  .loader {
+    position: fixed;
+    bottom: -16px;
     left: 0;
     right: 0;
     display: none;

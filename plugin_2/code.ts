@@ -99,6 +99,7 @@ figma.ui.onmessage = async (msg: { type: string; prompt: string }) => {
   }
 
   if (msg.type === "generate-ai") {
+    figma.ui.postMessage({ isLoading: true });
     figma.notify("Submitted!", { timeout: 200 }); // this is how you show an alert/toast inside the figma the UI
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -130,17 +131,20 @@ figma.ui.onmessage = async (msg: { type: string; prompt: string }) => {
           error: true,
           timeout: 2000,
         });
+        figma.ui.postMessage({ isLoading: false });
       } else {
         figma.notify("Error: No response from OpenAI API", {
           error: true,
           timeout: 2000,
         });
+        figma.ui.postMessage({ isLoading: false });
       }
     } else {
       const parsedResponse = parseOpenAIResponse_plugin2(data);
       figma.ui.postMessage({
         type: "parsed-response",
         message: parsedResponse,
+        isLoading: false,
       });
       do_something_with_response(parsedResponse);
     }
