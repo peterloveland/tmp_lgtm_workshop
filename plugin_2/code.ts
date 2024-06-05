@@ -40,11 +40,8 @@ figma.ui.onmessage = async (msg: { type: string; prompt: string }) => {
           {
             role: "system",
             content: `
-	You are a Figma plugin, code generating assistant that outputs JSON as a response like { result: string }
-	The result is the required code to generate something in Figma using the plugin api which we will then eval() and run.
-	You will JUST respond with the result json. Never close the plugin. 
-	Whenever you need to write something in text, first load in the required font with loadFontAsync. This will always be family: 'SF Pro Text', style: 'Semibold'. Never change this.
-`,
+              Paste prompt here
+            `,
           },
           { role: "user", content: msg.prompt },
         ],
