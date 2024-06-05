@@ -24,11 +24,6 @@
   onmessage = (event) => {
     const { type, message, isLoading } = event.data.pluginMessage
 
-    // If we receive an event of type "pong", show an alert.
-    if (type === 'pong') {
-      alert("Pong!")
-    }
-
     if (type === 'parsed-response') {
       document.getElementById('parsed-response').innerText = message ? JSON.stringify(message, null, 5) : 'No response'
     }
@@ -90,10 +85,12 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    padding-bottom: 40px;
   }
 
   .isLoading {
     opacity: 0.5;
+    pointer-events: none;
   }
 
   .isLoading .loader {

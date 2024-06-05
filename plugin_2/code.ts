@@ -7,13 +7,7 @@ figma.showUI(__html__, { width: 500, height: 500 });
 
 figma.ui.onmessage = async (msg: { type: string; prompt: string }) => {
   if (msg.type === "create-shapes") {
-    try {
-      // Lesson 4 content here
-    } catch (error) {
-      figma.notify("Error: " + error, { timeout: 2000, error: true });
-      console.error(error);
-    }
-    return false;
+    generateShapes();
   }
 
   if (msg.type === "test-eval") {
@@ -27,75 +21,7 @@ figma.ui.onmessage = async (msg: { type: string; prompt: string }) => {
   }
 
   if (msg.type === "get-component-details") {
-    const currentSelectedComponent = figma.currentPage.selection[0];
-    if (currentSelectedComponent.type === "INSTANCE") {
-      const parentComponent =
-        (await currentSelectedComponent.getMainComponentAsync()) as ComponentNode;
-      const key = parentComponent.key;
-
-      let props;
-      try {
-        // if the parent component doesn't have variants it's simple:
-        props = parentComponent.componentPropertyDefinitions;
-      } catch (error) {
-        console.log("couldn't get property ref");
-        try {
-          const importedComponent = await figma.importComponentByKeyAsync(key);
-          props = importedComponent.componentPropertyDefinitions;
-        } catch (error) {
-          try {
-            const importedComponent = await figma.importComponentByKeyAsync(
-              key
-            );
-            const componentSet = importedComponent.parent as ComponentNode;
-            props = componentSet.componentPropertyDefinitions;
-          } catch (error) {
-            figma.notify(
-              "Error. Try right clicking -> 'go to main component' and re run there",
-              { error: true }
-            );
-          }
-        }
-      } finally {
-        figma.ui.postMessage({
-          type: "parsed-response",
-          message: {
-            key: key,
-            properties: props,
-            node: currentSelectedComponent,
-          },
-        });
-      }
-    }
-    if (
-      currentSelectedComponent.type === "COMPONENT" ||
-      currentSelectedComponent.type === "COMPONENT_SET"
-    ) {
-      try {
-        figma.ui.postMessage({
-          type: "parsed-response",
-          message: {
-            properties: currentSelectedComponent.componentPropertyDefinitions,
-          },
-        });
-      } catch (error) {
-        console.log(error);
-        try {
-          // select figma parent
-          const componentSet = currentSelectedComponent.parent as ComponentNode;
-          figma.ui.postMessage({
-            type: "parsed-response",
-            message: {
-              properties: componentSet.componentPropertyDefinitions,
-            },
-          });
-        } catch (error) {
-          figma.notify(
-            "We can't find the component/component set, this looks like a variant?"
-          );
-        }
-      }
-    }
+    getComponentDetails();
   }
 
   if (msg.type === "generate-ai") {
@@ -114,8 +40,11 @@ figma.ui.onmessage = async (msg: { type: string; prompt: string }) => {
           {
             role: "system",
             content: `
-
-            `,
+	You are a Figma plugin, code generating assistant that outputs JSON as a response like { result: string }
+	The result is the required code to generate something in Figma using the plugin api which we will then eval() and run.
+	You will JUST respond with the result json. Never close the plugin. 
+	Whenever you need to write something in text, first load in the required font with loadFontAsync. This will always be family: 'SF Pro Text', style: 'Semibold'. Never change this.
+`,
           },
           { role: "user", content: msg.prompt },
         ],
@@ -193,4 +122,96 @@ const parseOpenAIResponse_plugin2 = (response: any) => {
   const content = response.choices[0].message.content;
   const parsedResponse = JSON.parse(content).result;
   return parsedResponse;
+};
+
+const generateShapes = async () => {
+  try {
+    // Lesson 4 content here
+    const parentFrame = figma.createFrame();
+    parentFrame.name = "Look, some API generated content!";
+    // auto size
+    parentFrame.layoutMode = "VERTICAL";
+    parentFrame.counterAxisSizingMode = "AUTO";
+    parentFrame.primaryAxisSizingMode = "AUTO";
+    parentFrame.itemSpacing = 10;
+    parentFrame.cornerRadius = 10;
+    // padding
+    parentFrame.paddingLeft = 10;
+    parentFrame.paddingRight = 10;
+    parentFrame.paddingTop = 10;
+    parentFrame.paddingBottom = 10;
+  } catch (error) {
+    figma.notify("Error: " + error, { timeout: 2000, error: true });
+    console.error(error);
+  }
+};
+
+const getComponentDetails = async () => {
+  const currentSelectedComponent = figma.currentPage.selection[0];
+  if (currentSelectedComponent.type === "INSTANCE") {
+    const parentComponent =
+      (await currentSelectedComponent.getMainComponentAsync()) as ComponentNode;
+    const key = parentComponent.key;
+
+    let props;
+    try {
+      // if the parent component doesn't have variants it's simple:
+      props = parentComponent.componentPropertyDefinitions;
+    } catch (error) {
+      console.log("couldn't get property ref");
+      try {
+        const importedComponent = await figma.importComponentByKeyAsync(key);
+        props = importedComponent.componentPropertyDefinitions;
+      } catch (error) {
+        try {
+          const importedComponent = await figma.importComponentByKeyAsync(key);
+          const componentSet = importedComponent.parent as ComponentNode;
+          props = componentSet.componentPropertyDefinitions;
+        } catch (error) {
+          figma.notify(
+            "Error. Try right clicking -> 'go to main component' and re run there",
+            { error: true }
+          );
+        }
+      }
+    } finally {
+      figma.ui.postMessage({
+        type: "parsed-response",
+        message: {
+          key: key,
+          properties: props,
+          node: currentSelectedComponent,
+        },
+      });
+    }
+  }
+  if (
+    currentSelectedComponent.type === "COMPONENT" ||
+    currentSelectedComponent.type === "COMPONENT_SET"
+  ) {
+    try {
+      figma.ui.postMessage({
+        type: "parsed-response",
+        message: {
+          properties: currentSelectedComponent.componentPropertyDefinitions,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+      try {
+        // select figma parent
+        const componentSet = currentSelectedComponent.parent as ComponentNode;
+        figma.ui.postMessage({
+          type: "parsed-response",
+          message: {
+            properties: componentSet.componentPropertyDefinitions,
+          },
+        });
+      } catch (error) {
+        figma.notify(
+          "We can't find the component/component set, this looks like a variant?"
+        );
+      }
+    }
+  }
 };

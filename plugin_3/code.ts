@@ -130,6 +130,10 @@ Make this a wireframe, use basic shapes and text, and just gray colors. No need 
       }
     } else {
       console.log("No nodes selected");
+      figma.notify("Select a node to export", {
+        timeout: 2000,
+      });
+      figma.ui.postMessage({ isLoading: false });
     }
   }
 };
