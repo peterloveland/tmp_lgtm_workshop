@@ -6,7 +6,10 @@
 
 <div class="ui-container">
   <div class="content">
-    <button id="get-picture">Analyse design</button>
+    <div class="buttons">
+      <button id="analyse-design">Analyse design</button>
+      <button id="describe-design">Describe what you see</button>
+    </div>
     <p id="parsed-response">API Response will appear here</p>
 
     <!-- // accordion -->
@@ -40,8 +43,12 @@
 
 
 
-  document.getElementById('get-picture').onclick = () => {
-    parent.postMessage({ pluginMessage: { type: 'get-picture' } }, '*')
+  document.getElementById('analyse-design').onclick = () => {
+    parent.postMessage({ pluginMessage: { type: 'analyse-design' } }, '*')
+  }
+
+  document.getElementById('describe-design').onclick = () => {
+    parent.postMessage({ pluginMessage: { type: 'describe-design' } }, '*')
   }
 
 </script>
@@ -52,6 +59,11 @@
     flex-direction: column;
     gap: 8px;
     font-family: "Inter", sans-serif;
+  }
+
+  .buttons {
+    display: flex;
+    gap: 8px;
   }
 
   #parsed-response {

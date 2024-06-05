@@ -8,7 +8,7 @@ figma.showUI(__html__);
 figma.ui.resize(500, 500);
 
 figma.ui.onmessage = async (msg: { type: string; prompt: string }) => {
-  if (msg.type === "get-picture") {
+  if (msg.type === "analyse-design" || msg.type === "describe-design") {
     figma.ui.postMessage({ isLoading: true });
     const selection = figma.currentPage.selection;
     // Check if something is selected
@@ -69,12 +69,11 @@ Make this a wireframe, use basic shapes and text, and just gray colors. No need 
                   content: [
                     {
                       type: "text",
-                      text: "You are a helpful and polite UI reviewing bot, make some suggestions about this design. They could be things to think about, like concerns about implementation. Or they could be suggestions of thigns to try. Use good UX/UI/accessibility practices. Add the response to a JSON object, { result: { review: string, recreateInstructions: string } }.",
+                      text:
+                        msg.type === "analyse-design"
+                          ? "You are a helpful and polite UI reviewing bot, make some suggestions about this design. They could be things to think about, like concerns about implementation. Or they could be suggestions of thigns to try. Use good UX/UI/accessibility practices. Add the response to a JSON object, { result: { review: string, recreateInstructions: string } }."
+                          : "Describe what you see and make a prediction about what this design is for, be very descriptive. Add the response to a JSON object, { result: { review: string, recreateInstructions: string } }.",
                     },
-                    // {
-                    //   type: "text",
-                    //   text: "Responsive is better than fast. It’s not fully shipped until it’s fast. Anything added dilutes everything else. Practicality beats purity. Approachable is better than simple. Mind your words, they are important. Speak like a human. Half measures are as bad as nothing at all. Encourage flow. Non-blocking is better than blocking. Favor focus over features. Avoid administrative distraction. Design for failure. Keep it logically awesome",
-                    // },
                     {
                       type: "text",
                       text: "We want to rebuild this in Figma, we will run commands in eval(). Provide instructions to recreate this in a string.",
