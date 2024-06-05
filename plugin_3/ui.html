@@ -4,6 +4,58 @@
         WE UPDATE THE FIGMA UI BY SENDING MESSAGES TO CODE.TS like: "parent.postMessage({ pluginMessage: { type: 'INSERT MESSAGE HERE AS A STRING' } }, '*')"
 -->
 
+<div class="ui-container">
+  <div class="content">
+    <button id="get-picture">Analyse design</button>
+    <p id="parsed-response">API Response will appear here</p>
+
+    <!-- // accordion -->
+    <details>
+      <summary>Reproduction instructions (WIP)<br />this doesn't quite work but it's close!</summary>
+      <pre id="reprod">Reproduction instructions will appear here</pre>
+    </details>
+  </div>
+  <p class="loader">Loading...</p>
+</div>
+
+<script>
+  // Listen for messages from the back-end
+  onmessage = (event) => {
+    const { type, message, isLoading } = event.data.pluginMessage
+
+    // If we receive an event of type "pong", show an alert.
+    if (type === 'pong') {
+      alert("Pong!")
+    }
+
+    if (type === 'parsed-response') {
+      document.getElementById('parsed-response').innerText = message ? message.review : 'No response'
+      document.getElementById('reprod').innerText = message ? JSON.stringify(message.recreateInstructions, null, 5) : 'No response'
+    }
+
+    // here we listen to the message from the back-end. This is looking for a message with the type "update-ui"
+    if (type === 'update-ui') {
+      console.log('Received message from back-end:', type)
+    }
+
+    // if isLoading is true, add the isLoading class to the container
+    if (isLoading) {
+      document.querySelector('.ui-container').classList.add('isLoading')
+    } else {
+      document.querySelector('.ui-container').classList.remove('isLoading')
+    }
+  }
+
+  // CLICK HANDLERS GO HERE:
+
+
+
+  document.getElementById('get-picture').onclick = () => {
+    parent.postMessage({ pluginMessage: { type: 'get-picture' } }, '*')
+  }
+
+</script>
+
 <style>
   .ui-container {
     display: flex;
@@ -37,47 +89,25 @@
     border-radius: 5px;
     font-size: 14px;
   }
+
+  .isLoading {
+    opacity: 0.5;
+  }
+
+  .isLoading .loader {
+    display: block;
+  }
+
+  .loader {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: none;
+    background: #38383e;
+    z-index: 999;
+    text-align: center;
+    color: white;
+    padding: 4px;
+  }
 </style>
-
-<div class="ui-container">
-  <button id="get-picture">Analyse design</button>
-  <p id="parsed-response">API Response will appear here</p>
-
-  <!-- // accordion -->
-  <details>
-    <summary>Reproduction instructions (WIP)<br />this doesn't quite work but it's close!</summary>
-    <pre id="reprod">Reproduction instructions will appear here</pre>
-  </details>
-
-</div>
-
-<script>
-  // Listen for messages from the back-end
-  onmessage = (event) => {
-    const { type, message } = event.data.pluginMessage
-
-    // If we receive an event of type "pong", show an alert.
-    if (type === 'pong') {
-      alert("Pong!")
-    }
-
-    if (type === 'parsed-response') {
-      document.getElementById('parsed-response').innerText = message ? message.review : 'No response'
-      document.getElementById('reprod').innerText = message ? JSON.stringify(message.recreateInstructions, null, 5) : 'No response'
-    }
-
-    // here we listen to the message from the back-end. This is looking for a message with the type "update-ui"
-    if (type === 'update-ui') {
-      console.log('Received message from back-end:', type)
-    }
-  }
-
-  // CLICK HANDLERS GO HERE:
-
-
-
-  document.getElementById('get-picture').onclick = () => {
-    parent.postMessage({ pluginMessage: { type: 'get-picture' } }, '*')
-  }
-
-</script>

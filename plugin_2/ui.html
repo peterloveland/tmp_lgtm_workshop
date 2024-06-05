@@ -4,38 +4,22 @@
         WE UPDATE THE FIGMA UI BY SENDING MESSAGES TO CODE.TS like: "parent.postMessage({ pluginMessage: { type: 'INSERT MESSAGE HERE AS A STRING' } }, '*')"
 -->
 
-<style>
-  .ui-container {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    font-family: "Inter", sans-serif;
-  }
-
-  #parsed-response {
-    color: gray;
-    font-size: 12px;
-    border-top: 1px solid lightgray;
-    padding-top: 12px;
-    width: 100%;
-    text-wrap: wrap;
-  }
-</style>
-
 <div class="ui-container">
-  <button id="create-shapes">create-shapes</button>
-  <button id="test-eval">Test eval</button>
-  <textarea id="prompt-text" placeholder="Prompt text here"></textarea>
-  <button id="submit">Submit</button>
-  <button id="get-component-details">get-component-details</button>
-  <pre id="parsed-response">API Response will appear here</pre>
-
+  <div class="content">
+    <button id="create-shapes">create-shapes</button>
+    <button id="test-eval">Test eval</button>
+    <textarea id="prompt-text" placeholder="Prompt text here"></textarea>
+    <button id="submit">Submit</button>
+    <button id="get-component-details">get-component-details</button>
+    <pre id="parsed-response">API Response will appear here</pre>
+  </div>
+  <p class="loader">Loading...</p>
 </div>
 
 <script>
   // Listen for messages from the back-end
   onmessage = (event) => {
-    const { type, message } = event.data.pluginMessage
+    const { type, message, isLoading } = event.data.pluginMessage
 
     // If we receive an event of type "pong", show an alert.
     if (type === 'pong') {
@@ -49,6 +33,13 @@
     // here we listen to the message from the back-end. This is looking for a message with the type "update-ui"
     if (type === 'update-ui') {
       console.log('Received message from back-end:', type)
+    }
+
+    // if isLoading is true, add the isLoading class to the container
+    if (isLoading) {
+      document.querySelector('.ui-container').classList.add('isLoading')
+    } else {
+      document.querySelector('.ui-container').classList.remove('isLoading')
     }
   }
 
@@ -71,4 +62,45 @@
     parent.postMessage({ pluginMessage: { type: 'test-eval' } }, '*')
   }
 
+
+
 </script>
+
+<style>
+  .ui-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-family: "Inter", sans-serif;
+  }
+
+  #parsed-response {
+    color: gray;
+    font-size: 12px;
+    border-top: 1px solid lightgray;
+    padding-top: 12px;
+    width: 100%;
+    text-wrap: wrap;
+  }
+
+  .isLoading {
+    opacity: 0.5;
+  }
+
+  .isLoading .loader {
+    display: block;
+  }
+
+  .loader {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: none;
+    background: #38383e;
+    z-index: 999;
+    text-align: center;
+    color: white;
+    padding: 4px;
+  }
+</style>

@@ -13,10 +13,11 @@ figma.showUI(__html__, { width: 500, height: 500 });
 // THIS IS WHERE WE LISTEN FOR MESSAGES FROM THE UI AND THEN DO SOMETHING WITH THEM
 figma.ui.onmessage = async (msg: { type: string; prompt: string }) => {
   if (msg.type === "ping") {
+    figma.ui.postMessage({ isLoading: true });
     // we listen for the message type 'ping!'
     figma.notify("Ping!", { timeout: 2000 }); // this is how you show an alert/toast inside the figma the UI
     setTimeout(() => {
-      figma.ui.postMessage({ type: "pong" });
+      figma.ui.postMessage({ type: "pong", isLoading: false });
     }, 2000);
   }
 
