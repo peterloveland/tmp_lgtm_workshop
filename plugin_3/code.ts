@@ -9,6 +9,7 @@ figma.ui.resize(500, 500);
 
 figma.ui.onmessage = async (msg: { type: string; prompt: string }) => {
   if (msg.type === "get-picture") {
+    figma.ui.postMessage({ isLoading: true });
     const selection = figma.currentPage.selection;
     // Check if something is selected
     if (selection.length > 0) {
@@ -91,7 +92,6 @@ Make this a wireframe, use basic shapes and text, and just gray colors. No need 
           }
         );
 
-        console.log("RUNNING 2");
         const data = await response.json();
         if (data.error || !data.choices.length) {
           console.error(data || "No response from OpenAI API");
@@ -100,11 +100,13 @@ Make this a wireframe, use basic shapes and text, and just gray colors. No need 
               error: true,
               timeout: 2000,
             });
+            figma.ui.postMessage({ isLoading: false });
           } else {
             figma.notify("Error: No response from OpenAI API", {
               error: true,
               timeout: 2000,
             });
+            figma.ui.postMessage({ isLoading: false });
           }
         } else {
           const parsedResponse = parseOpenAIResponse(data);
@@ -121,6 +123,7 @@ Make this a wireframe, use basic shapes and text, and just gray colors. No need 
             type: "parsed-response",
             message: parsedResponse,
           });
+          figma.ui.postMessage({ isLoading: false });
         }
       } catch (error) {
         console.error(error);

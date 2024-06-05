@@ -23,19 +23,9 @@
   onmessage = (event) => {
     const { type, message, isLoading } = event.data.pluginMessage
 
-    // If we receive an event of type "pong", show an alert.
-    if (type === 'pong') {
-      alert("Pong!")
-    }
-
     if (type === 'parsed-response') {
       document.getElementById('parsed-response').innerText = message ? message.review : 'No response'
       document.getElementById('reprod').innerText = message ? JSON.stringify(message.recreateInstructions, null, 5) : 'No response'
-    }
-
-    // here we listen to the message from the back-end. This is looking for a message with the type "update-ui"
-    if (type === 'update-ui') {
-      console.log('Received message from back-end:', type)
     }
 
     // if isLoading is true, add the isLoading class to the container
@@ -100,7 +90,7 @@
 
   .loader {
     position: fixed;
-    bottom: 0;
+    bottom: -16px;
     left: 0;
     right: 0;
     display: none;
