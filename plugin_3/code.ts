@@ -95,7 +95,17 @@ Make this a wireframe, use basic shapes and text, and just gray colors. No need 
         const data = await response.json();
         if (data.error || !data.choices.length) {
           console.error(data || "No response from OpenAI API");
-          figma.notify("Error: No response from OpenAI API", { timeout: 2000 });
+          if (data.error.message.includes("API key")) {
+            figma.notify("Did you add the API key?", {
+              error: true,
+              timeout: 2000,
+            });
+          } else {
+            figma.notify("Error: No response from OpenAI API", {
+              error: true,
+              timeout: 2000,
+            });
+          }
         } else {
           const parsedResponse = parseOpenAIResponse(data);
           console.log(parsedResponse.recreateInstructions);
