@@ -127,19 +127,6 @@ const parseOpenAIResponse_plugin2 = (response: any) => {
 const generateShapes = async () => {
   try {
     // Lesson 4 content here
-    const parentFrame = figma.createFrame();
-    parentFrame.name = "Look, some API generated content!";
-    // auto size
-    parentFrame.layoutMode = "VERTICAL";
-    parentFrame.counterAxisSizingMode = "AUTO";
-    parentFrame.primaryAxisSizingMode = "AUTO";
-    parentFrame.itemSpacing = 10;
-    parentFrame.cornerRadius = 10;
-    // padding
-    parentFrame.paddingLeft = 10;
-    parentFrame.paddingRight = 10;
-    parentFrame.paddingTop = 10;
-    parentFrame.paddingBottom = 10;
   } catch (error) {
     figma.notify("Error: " + error, { timeout: 2000, error: true });
     console.error(error);
