@@ -13,15 +13,17 @@ figma.showUI(__html__, { width: 500, height: 500 });
 // THIS IS WHERE WE LISTEN FOR MESSAGES FROM THE UI AND THEN DO SOMETHING WITH THEM
 figma.ui.onmessage = async (msg: { type: string; prompt: string }) => {
   if (msg.type === "ping") {
+    figma.ui.postMessage({ isLoading: true });
     // we listen for the message type 'ping!'
     figma.notify("Ping!", { timeout: 2000 }); // this is how you show an alert/toast inside the figma the UI
     setTimeout(() => {
-      figma.ui.postMessage({ type: "pong" });
+      figma.ui.postMessage({ type: "pong", isLoading: false });
     }, 2000);
   }
 
   if (msg.type === "generate-ai") {
-    figma.notify("Submitted!", { timeout: 2000 }); // this is how you show an alert/toast inside the figma the UI
+    figma.ui.postMessage({ isLoading: true });
+    figma.notify("Submitted!", { timeout: 200 }); // this is how you show an alert/toast inside the figma the UI
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -46,9 +48,22 @@ figma.ui.onmessage = async (msg: { type: string; prompt: string }) => {
     const data = await response.json();
     if (data.error || !data.choices.length) {
       console.error(data || "No response from OpenAI API");
-      figma.notify("Error: No response from OpenAI API", { timeout: 2000 });
+      if (data.error.message.includes("API key")) {
+        figma.notify("Did you add the API key?", {
+          error: true,
+          timeout: 2000,
+        });
+        figma.ui.postMessage({ isLoading: false });
+      } else {
+        figma.notify("Error: No response from OpenAI API", {
+          error: true,
+          timeout: 2000,
+        });
+        figma.ui.postMessage({ isLoading: false });
+      }
     } else {
       const parsedResponse = parseOpenAIResponse(data);
+      figma.ui.postMessage({ isLoading: false });
       figma.ui.postMessage({
         type: "parsed-response",
         message: parsedResponse,

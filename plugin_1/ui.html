@@ -4,29 +4,17 @@
         WE UPDATE THE FIGMA UI BY SENDING MESSAGES TO CODE.TS like: "parent.postMessage({ pluginMessage: { type: 'INSERT MESSAGE HERE AS A STRING' } }, '*')"
 -->
 
-<style>
-    .ui-container {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        font-family: "Inter", sans-serif;
-    }
-
-    #parsed-response {
-        color: gray;
-        font-size: 12px;
-        border-top: 1px solid lightgray;
-        padding-top: 12px;
-        width: 100%;
-        text-wrap: wrap;
-    }
-</style>
-
 <div class="ui-container">
     <!-- <textarea id="prompt-text">Generate content for a sample GitHub issue about React</textarea> -->
-    <button id="submit">Submit</button>
-    <button id="ping">Ping</button>
-    <pre id="parsed-response">API Response will appear here</pre>
+    <div class="content">
+        <button id="submit">Submit</button>
+        <pre id="parsed-response">API Response will appear here</pre>
+    </div>
+    <div class="workshop-helpers">
+        Helpers:
+        <button id="ping">Ping</button>
+    </div>
+    <p class="loader">Loading...</p>
 </div>
 
 <script>
@@ -47,6 +35,13 @@
         if (type === 'update-ui') {
             console.log('Received message from back-end:', type)
         }
+
+        // if isLoading is true, add the isLoading class to the container
+        if (isLoading) {
+            document.querySelector('.ui-container').classList.add('isLoading')
+        } else {
+            document.querySelector('.ui-container').classList.remove('isLoading')
+        }
     }
 
     // CLICK HANDLERS GO HERE:
@@ -60,3 +55,62 @@
     }
 
 </script>
+
+
+<style>
+    .ui-container {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        font-family: "Inter", sans-serif;
+        position: relative;
+        height: calc(100vh - 16px);
+    }
+
+    #parsed-response {
+        color: gray;
+        font-size: 12px;
+        border-top: 1px solid lightgray;
+        padding-top: 12px;
+        width: 100%;
+        text-wrap: wrap;
+    }
+
+    .content {
+        flex-grow: 1;
+        padding-bottom: 40px;
+    }
+
+    .isLoading {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    .isLoading .loader {
+        display: block;
+    }
+
+    .workshop-helpers {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 16px 16px;
+        background: white;
+        border-top: 1px solid lightgray;
+        font-size: 12px;
+    }
+
+    .loader {
+        position: fixed;
+        bottom: -16px;
+        left: 0;
+        right: 0;
+        display: none;
+        background: #38383e;
+        z-index: 999;
+        text-align: center;
+        color: white;
+        padding: 4px;
+    }
+</style>

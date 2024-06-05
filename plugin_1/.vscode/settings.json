@@ -1,0 +1,12 @@
+{
+  "files.exclude": {
+    "**/**/node_modules": true, 
+    "**/**/.gitignore": true,
+    "**/**/manifest.json": true,
+    "**/**/package.json": true,
+    "**/**/package-lock.json": true,
+    "**/**/tsconfig.json": true,
+    "**/**/README.md": true,
+    "**/**/code.js": true,
+  }
+}
