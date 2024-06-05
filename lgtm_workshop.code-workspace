@@ -1,0 +1,14 @@
+{
+  "folders": [
+	{
+		"path": "plugin_1"
+	},
+	{
+		"path": "plugin_2"
+	},
+	{
+		"path": "plugin_3"
+	}
+],
+  "settings": {}
+}

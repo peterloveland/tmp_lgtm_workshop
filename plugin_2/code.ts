@@ -1,4 +1,4 @@
-const OPENAI_API_KEY = "";
+const OPENAI_API_KEY = "https://api.openai.com/v1/chat/completions";
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
