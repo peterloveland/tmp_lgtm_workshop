@@ -1,4 +1,4 @@
-const OPENAI_API_KEY = "";
+const OPENAI_API_KEY = "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";
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
