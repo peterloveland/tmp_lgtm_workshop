@@ -114,3 +114,125 @@
         padding: 4px;
     }
 </style>
+
+
+
+<!-- PLUGIN 1 FINAL STATE. ALLOWS COPILOT TO HELP -->
+
+<!--    THIS IS THE UI OF THE FIGMA PLUGIN.
+        IT CONNECTS TO THE OPENAI API.
+        WHEN WE RECEIVE A MESSAGE FROM THE BACK-END, WE CAN USE IT TO UPDATE THE UI.
+        WE UPDATE THE FIGMA UI BY SENDING MESSAGES TO CODE.TS like: "parent.postMessage({ pluginMessage: { type: 'INSERT MESSAGE HERE AS A STRING' } }, '*')"
+
+
+<div class="ui-container">
+    <textarea id="prompt-text">Generate content for a sample GitHub issue about React</textarea>
+    <div class="content">
+        <button id="submit">Submit</button>
+        <pre id="parsed-response">API Response will appear here</pre>
+    </div>
+    <div class="workshop-helpers">
+        Helpers:
+        <button id="ping">Ping</button>
+    </div>
+    <p class="loader">Loading...</p>
+</div>
+
+<script>
+    // Listen for messages from the back-end
+    onmessage = (event) => {
+        const { type, message, isLoading } = event.data.pluginMessage
+
+        // If we receive an event of type "pong", show an alert.
+        if (type === 'pong') {
+            alert("Pong!")
+        }
+
+        if (type === 'parsed-response') {
+            document.getElementById('parsed-response').innerText = message ? JSON.stringify(message, null, 5) : 'No response'
+        }
+
+        // here we listen to the message from the back-end. This is looking for a message with the type "update-ui"
+        if (type === 'update-ui') {
+            console.log('Received message from back-end:', type)
+        }
+
+        // if isLoading is true, add the isLoading class to the container
+        if (isLoading) {
+            document.querySelector('.ui-container').classList.add('isLoading')
+        } else {
+            document.querySelector('.ui-container').classList.remove('isLoading')
+        }
+    }
+
+    // CLICK HANDLERS GO HERE:
+    document.getElementById('ping').onclick = () => {
+        parent.postMessage({ pluginMessage: { type: 'ping' } }, '*')
+    }
+
+    document.getElementById('submit').onclick = () => {
+        const promptText = document.getElementById('prompt-text') ? document.getElementById('prompt-text').value : ""
+        parent.postMessage({ pluginMessage: { type: 'generate-ai', prompt: promptText } }, '*')
+    }
+
+</script>
+
+
+<style>
+    .ui-container {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        font-family: "Inter", sans-serif;
+        position: relative;
+        height: calc(100vh - 16px);
+    }
+
+    #parsed-response {
+        color: gray;
+        font-size: 12px;
+        border-top: 1px solid lightgray;
+        padding-top: 12px;
+        width: 100%;
+        text-wrap: wrap;
+    }
+
+    .content {
+        flex-grow: 1;
+        padding-bottom: 40px;
+    }
+
+    .isLoading {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    .isLoading .loader {
+        display: block;
+    }
+
+    .workshop-helpers {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 16px 16px;
+        background: white;
+        border-top: 1px solid lightgray;
+        font-size: 12px;
+    }
+
+    .loader {
+        position: fixed;
+        bottom: -16px;
+        left: 0;
+        right: 0;
+        display: none;
+        background: #38383e;
+        z-index: 999;
+        text-align: center;
+        color: white;
+        padding: 4px;
+    }
+</style>
+-->
